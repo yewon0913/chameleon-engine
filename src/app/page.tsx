@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Film, FileText, PenTool, Users, ClipboardList } from "lucide-react";
+import { Film, FileText, PenTool, Users, ClipboardList, BarChart3 } from "lucide-react";
 
 const MODULES = [
   {
@@ -26,6 +26,14 @@ const MODULES = [
     label: "고객 설문",
     desc: "신규 고객 마케팅 상담 설문 페이지",
     color: "from-emerald-500 to-teal-600",
+    ready: true,
+  },
+  {
+    href: "/revenue",
+    icon: BarChart3,
+    label: "수익 대시보드",
+    desc: "매출 추이, 채널별 분석, 목표 달성률, 정산 관리",
+    color: "from-yellow-500 to-amber-600",
     ready: true,
   },
   {

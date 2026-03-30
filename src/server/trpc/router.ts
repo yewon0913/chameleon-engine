@@ -2,6 +2,7 @@ import { router, publicProcedure } from "./init";
 import { chameleonRouter } from "../routers/chameleon";
 import { contentRouter } from "../routers/content";
 import { crmRouter } from "../routers/crm";
+import { revenueRouter } from "../routers/revenue";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -10,6 +11,7 @@ export const appRouter = router({
   chameleon: chameleonRouter,
   content: contentRouter,
   crm: crmRouter,
+  revenue: revenueRouter,
 });
 
 export type AppRouter = typeof appRouter;

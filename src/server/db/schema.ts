@@ -50,6 +50,25 @@ export const chameleonNotes = pgTable("chameleon_notes", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const chameleonRevenue = pgTable("chameleon_revenue", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id").references(() => chameleonClients.id, { onDelete: "set null" }),
+  projectId: uuid("project_id").references(() => chameleonProjects.id, { onDelete: "set null" }),
+  amount: integer("amount").notNull().default(0),
+  serviceType: text("service_type").notNull(),
+  channel: text("channel").notNull().default("직접"),
+  status: text("status").notNull().default("미정산"),
+  settledAt: timestamp("settled_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonGoals = pgTable("chameleon_goals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  month: text("month").notNull().unique(),
+  targetAmount: integer("target_amount").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const chameleonIntake = pgTable("chameleon_intake", {
   id: uuid("id").primaryKey().defaultRandom(),
   clientName: text("client_name").notNull(),
