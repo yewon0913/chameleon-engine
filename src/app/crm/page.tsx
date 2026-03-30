@@ -101,7 +101,7 @@ export default function CRMPage() {
             대시보드
           </Link>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF6B35] to-orange-600 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#F5D061] shadow-lg">
               <Users size={20} className="text-white" />
             </div>
             <div>
@@ -127,7 +127,7 @@ export default function CRMPage() {
           onClick={() => setFilterStatus("")}
           className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             !filterStatus
-              ? "bg-[#FF6B35]/20 text-[#FF6B35]"
+              ? "bg-[#D4AF37]/20 text-[#D4AF37]"
               : "bg-white/5 text-slate-400 hover:bg-white/10"
           }`}
         >
@@ -141,7 +141,7 @@ export default function CRMPage() {
             }
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               filterStatus === s.label
-                ? "bg-[#FF6B35]/20 text-[#FF6B35]"
+                ? "bg-[#D4AF37]/20 text-[#D4AF37]"
                 : "bg-white/5 text-slate-400 hover:bg-white/10"
             }`}
           >
@@ -161,7 +161,7 @@ export default function CRMPage() {
           placeholder="이름, 업종, 사업장명으로 검색..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-[#FF6B35]/50 focus:outline-none"
+          className="w-full rounded-xl border border-[#D4AF37]/15 bg-black/40 py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-[#D4AF37]/50 focus:outline-none"
         />
       </div>
 
@@ -179,7 +179,7 @@ export default function CRMPage() {
           {clients.length === 0 && (
             <p className="mt-2 text-sm text-slate-500">
               신규 고객을 추가하거나{" "}
-              <Link href="/intake" className="text-[#FF6B35] hover:underline">
+              <Link href="/intake" className="text-[#D4AF37] hover:underline">
                 설문 링크
               </Link>
               를 공유하세요
@@ -202,7 +202,7 @@ export default function CRMPage() {
             <Link
               key={client.id}
               href={`/crm/${client.id}`}
-              className="group grid grid-cols-1 sm:grid-cols-[1fr_100px_100px_120px_80px_40px] items-center gap-2 sm:gap-4 rounded-xl border border-white/5 bg-white/[0.02] p-4 transition-all hover:border-[#FF6B35]/20 hover:bg-white/[0.04]"
+              className="group grid grid-cols-1 sm:grid-cols-[1fr_100px_100px_120px_80px_40px] items-center gap-2 sm:gap-4 rounded-xl border border-[#D4AF37]/10 bg-black/40 p-4 transition-all hover:border-[#D4AF37]/30 hover:bg-[#D4AF37]/5"
             >
               <div>
                 <p className="font-semibold text-white">{client.name}</p>
@@ -238,7 +238,7 @@ export default function CRMPage() {
               </span>
               <ChevronRight
                 size={16}
-                className="text-slate-600 group-hover:text-[#FF6B35] transition-colors"
+                className="text-slate-600 group-hover:text-[#D4AF37] transition-colors"
               />
             </Link>
           ))}
@@ -298,7 +298,7 @@ function AddClientModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#111] p-6 max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-lg rounded-2xl border border-[#D4AF37]/20 bg-[#0d0d0d] p-6 max-h-[90vh] overflow-y-auto">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">신규 고객 등록</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white">
@@ -355,7 +355,7 @@ function Input({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#FF6B35]/50 focus:outline-none"
+        className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
       />
     </div>
   );

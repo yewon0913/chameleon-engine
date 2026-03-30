@@ -126,7 +126,7 @@ export default function IntakePage() {
     <div className="mx-auto max-w-lg px-4 py-8">
       {/* Header */}
       <div className="mb-8 text-center">
-        <p className="text-sm font-semibold text-[#FF6B35]">
+        <p className="text-sm font-semibold text-[#D4AF37]">
           카멜레온 콘텐츠 공장
         </p>
         <h1 className="mt-1 text-2xl font-bold text-white">
@@ -144,9 +144,9 @@ export default function IntakePage() {
             <div
               className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors ${
                 i === step
-                  ? "bg-[#FF6B35] text-white"
+                  ? "chameleon-gradient text-white"
                   : i < step
-                  ? "bg-[#FF6B35]/20 text-[#FF6B35]"
+                  ? "bg-[#D4AF37]/20 text-[#D4AF37]"
                   : "bg-white/5 text-slate-500"
               }`}
             >
@@ -155,7 +155,7 @@ export default function IntakePage() {
             {i < STEPS.length - 1 && (
               <div
                 className={`h-0.5 w-6 ${
-                  i < step ? "bg-[#FF6B35]/40" : "bg-white/10"
+                  i < step ? "bg-[#D4AF37]/40" : "bg-white/10"
                 }`}
               />
             )}
@@ -164,7 +164,7 @@ export default function IntakePage() {
       </div>
 
       {/* Step Content */}
-      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+      <div className="rounded-2xl border border-[#D4AF37]/15 bg-black/40 p-6">
         <h2 className="mb-1 text-lg font-bold text-white">{STEPS[step]}</h2>
         <p className="mb-6 text-xs text-slate-500">
           {step === 0 && "사업자 기본 정보를 입력해주세요"}
@@ -259,7 +259,7 @@ export default function IntakePage() {
                     onClick={() => set("currentMarketing", opt)}
                     className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                       form.currentMarketing === opt
-                        ? "bg-[#FF6B35] text-white"
+                        ? "bg-[#D4AF37] text-white"
                         : "bg-white/5 text-slate-400 hover:bg-white/10"
                     }`}
                   >
@@ -280,8 +280,8 @@ export default function IntakePage() {
                 onClick={() => toggleArray("desiredServices", svc)}
                 className={`w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all ${
                   form.desiredServices.includes(svc)
-                    ? "border-[#FF6B35]/50 bg-[#FF6B35]/10 text-white"
-                    : "border-white/10 bg-white/[0.02] text-slate-400 hover:border-white/20"
+                    ? "border-[#D4AF37]/50 bg-[#D4AF37]/10 text-white"
+                    : "border-[#D4AF37]/15 bg-black/40 text-slate-400 hover:border-white/20"
                 }`}
               >
                 <span className="mr-2">
@@ -303,8 +303,8 @@ export default function IntakePage() {
                   onClick={() => toggleArray("goals", goal)}
                   className={`w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all ${
                     form.goals.includes(goal)
-                      ? "border-[#FF6B35]/50 bg-[#FF6B35]/10 text-white"
-                      : "border-white/10 bg-white/[0.02] text-slate-400 hover:border-white/20"
+                      ? "border-[#D4AF37]/50 bg-[#D4AF37]/10 text-white"
+                      : "border-[#D4AF37]/15 bg-black/40 text-slate-400 hover:border-white/20"
                   }`}
                 >
                   <span className="mr-2">
@@ -326,7 +326,7 @@ export default function IntakePage() {
                     onClick={() => set("budget", b)}
                     className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                       form.budget === b
-                        ? "bg-[#FF6B35] text-white"
+                        ? "bg-[#D4AF37] text-white"
                         : "bg-white/5 text-slate-400 hover:bg-white/10"
                     }`}
                   >
@@ -392,7 +392,7 @@ function IntakeInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-[#FF6B35]/50 focus:outline-none"
+        className="w-full rounded-xl border border-[#D4AF37]/15 bg-black/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
       />
     </div>
   );

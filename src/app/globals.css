@@ -2,7 +2,10 @@
 
 :root {
   --background: #0a0a0a;
-  --foreground: #ededed;
+  --foreground: #fafafa;
+  --gold: #D4AF37;
+  --gold-light: #F5D061;
+  --gold-dark: #B8962E;
 }
 
 @theme inline {
@@ -18,35 +21,110 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Glass card */
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* ── Chameleon Color Shift Animation ── */
+@keyframes chameleon-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.chameleon-gradient {
+  background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061, #EC4899, #8B5CF6);
+  background-size: 400% 400%;
+  animation: chameleon-shift 8s ease infinite;
+}
+
+.chameleon-text {
+  background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061, #EC4899, #8B5CF6);
+  background-size: 400% 400%;
+  animation: chameleon-shift 8s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Luxury Card ── */
+.card-luxury {
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 16px;
+  transition: all 0.3s;
+}
+.card-luxury:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
 }
 
-/* Accent button */
-.btn-accent {
-  background: linear-gradient(135deg, #FF6B35, #e55a2b);
+/* ── Gold Glow ── */
+.gold-glow {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+/* ── Gold Button ── */
+.btn-gold {
+  background: linear-gradient(135deg, #D4AF37, #F5D061);
+  color: #0a0a0a;
+  font-weight: 600;
   border-radius: 12px;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
-.btn-accent:hover:not(:disabled) {
-  filter: brightness(1.1);
-  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+.btn-gold:hover:not(:disabled) {
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  transform: translateY(-1px);
 }
-.btn-accent:disabled {
-  opacity: 0.4;
+.btn-gold:disabled {
+  opacity: 0.35;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Ghost button */
+/* ── Ghost Button (gold border) ── */
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 12px;
   transition: all 0.2s;
 }
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+/* ── Glass Card (legacy compat) ── */
+.glass-card {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+/* ── btn-accent → gold alias ── */
+.btn-accent {
+  background: linear-gradient(135deg, #D4AF37, #F5D061);
+  color: #0a0a0a;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+.btn-accent:hover:not(:disabled) {
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  transform: translateY(-1px);
+}
+.btn-accent:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Subtle shimmer for gold elements ── */
+@keyframes gold-shimmer {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.gold-shimmer {
+  animation: gold-shimmer 3s ease-in-out infinite;
 }

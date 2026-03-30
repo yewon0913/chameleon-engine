@@ -133,7 +133,7 @@ export default function ClientDetailPage() {
     return (
       <div className="py-20 text-center">
         <p className="text-slate-400">고객을 찾을 수 없습니다</p>
-        <Link href="/crm" className="mt-4 inline-block text-[#FF6B35]">
+        <Link href="/crm" className="mt-4 inline-block text-[#D4AF37]">
           목록으로
         </Link>
       </div>
@@ -190,9 +190,9 @@ export default function ClientDetailPage() {
                 onClick={() => changeStatus(step)}
                 className={`relative shrink-0 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                   isActive
-                    ? "bg-[#FF6B35] text-white shadow-lg shadow-[#FF6B35]/20"
+                    ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/20"
                     : isPast
-                    ? "bg-[#FF6B35]/10 text-[#FF6B35]"
+                    ? "bg-[#D4AF37]/10 text-[#D4AF37]"
                     : "bg-white/5 text-slate-500 hover:bg-white/10"
                 }`}
               >
@@ -207,7 +207,7 @@ export default function ClientDetailPage() {
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
           {/* SNS & Marketing Info */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+          <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
             <h3 className="mb-4 text-sm font-semibold text-white">
               고객 정보
             </h3>
@@ -222,7 +222,7 @@ export default function ClientDetailPage() {
           </div>
 
           {/* Projects */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+          <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-white">
                 프로젝트 ({client.projects.length})
@@ -245,7 +245,7 @@ export default function ClientDetailPage() {
                 {client.projects.map((p) => (
                   <div
                     key={p.id}
-                    className="rounded-lg border border-white/5 bg-white/[0.02] p-3"
+                    className="rounded-lg border border-[#D4AF37]/10 bg-black/30 p-3"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div>
@@ -272,7 +272,7 @@ export default function ClientDetailPage() {
                     <div className="flex items-center gap-3">
                       <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-[#FF6B35] to-orange-400 transition-all"
+                          className="h-full rounded-full bg-gradient-to-r from-[#D4AF37] to-[#F5D061] transition-all"
                           style={{ width: `${p.progress}%` }}
                         />
                       </div>
@@ -288,9 +288,9 @@ export default function ClientDetailPage() {
                   </div>
                 ))}
 
-                <div className="flex justify-between pt-2 border-t border-white/5">
+                <div className="flex justify-between pt-2 border-t border-[#D4AF37]/10">
                   <span className="text-xs text-slate-400">총 금액</span>
-                  <span className="text-sm font-semibold text-[#FF6B35]">
+                  <span className="text-sm font-semibold text-[#D4AF37]">
                     {totalAmount.toLocaleString()}원
                   </span>
                 </div>
@@ -301,7 +301,7 @@ export default function ClientDetailPage() {
 
         {/* Right Column — Notes Timeline */}
         <div className="space-y-6">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+          <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
             <h3 className="mb-4 text-sm font-semibold text-white flex items-center gap-2">
               <MessageSquare size={14} />
               상담 이력
@@ -314,14 +314,14 @@ export default function ClientDetailPage() {
                 onChange={(e) => setNoteText(e.target.value)}
                 placeholder="상담 내용을 기록하세요..."
                 rows={3}
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#FF6B35]/50 focus:outline-none resize-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none resize-none"
               />
               <input
                 type="text"
                 value={noteAction}
                 onChange={(e) => setNoteAction(e.target.value)}
                 placeholder="다음 액션 (선택)"
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-[#FF6B35]/50 focus:outline-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
               />
               <button
                 onClick={addNote}
@@ -342,14 +342,14 @@ export default function ClientDetailPage() {
                 {client.notes.map((note) => (
                   <div
                     key={note.id}
-                    className="relative border-l-2 border-[#FF6B35]/30 pl-3"
+                    className="relative border-l-2 border-[#D4AF37]/30 pl-3"
                   >
-                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#FF6B35]" />
+                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#D4AF37]" />
                     <p className="text-xs text-slate-300 whitespace-pre-wrap">
                       {note.content}
                     </p>
                     {note.nextAction && (
-                      <p className="mt-1 text-[10px] text-[#FF6B35]">
+                      <p className="mt-1 text-[10px] text-[#D4AF37]">
                         → {note.nextAction}
                       </p>
                     )}
@@ -446,7 +446,7 @@ function AddProjectModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111] p-6">
+      <div className="w-full max-w-md rounded-2xl border border-[#D4AF37]/20 bg-[#0d0d0d] p-6">
         <h2 className="mb-4 text-lg font-bold text-white">프로젝트 추가</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -456,7 +456,7 @@ function AddProjectModal({
             <select
               value={type}
               onChange={(e) => handleTypeChange(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#FF6B35]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
             >
               {PROJECT_TYPES.map((t) => (
                 <option key={t.value} value={t.value} className="bg-[#111]">
@@ -473,7 +473,7 @@ function AddProjectModal({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#FF6B35]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -484,7 +484,7 @@ function AddProjectModal({
                 min={1}
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#FF6B35]/50 focus:outline-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
               />
             </div>
             <div>
@@ -496,7 +496,7 @@ function AddProjectModal({
                 min={0}
                 value={unitPrice}
                 onChange={(e) => setUnitPrice(Number(e.target.value))}
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#FF6B35]/50 focus:outline-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
               />
             </div>
           </div>
@@ -508,12 +508,12 @@ function AddProjectModal({
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#FF6B35]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
             />
           </div>
-          <div className="flex items-center justify-between border-t border-white/5 pt-3">
+          <div className="flex items-center justify-between border-t border-[#D4AF37]/10 pt-3">
             <span className="text-sm text-slate-400">합계</span>
-            <span className="text-lg font-bold text-[#FF6B35]">
+            <span className="text-lg font-bold text-[#D4AF37]">
               {(quantity * unitPrice).toLocaleString()}원
             </span>
           </div>
@@ -600,7 +600,7 @@ function QuoteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#111] p-6 max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-lg rounded-2xl border border-[#D4AF37]/20 bg-[#0d0d0d] p-6 max-h-[90vh] overflow-y-auto">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">견적서 미리보기</h2>
           <button
@@ -612,9 +612,9 @@ function QuoteModal({
         </div>
 
         {/* Quote Content */}
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5 mb-4">
+        <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5 mb-4">
           <div className="text-center mb-4">
-            <p className="text-lg font-bold text-[#FF6B35]">
+            <p className="text-lg font-bold text-[#D4AF37]">
               카멜레온 콘텐츠 공장
             </p>
             <p className="text-xl font-bold text-white mt-1">견적서</p>
@@ -668,7 +668,7 @@ function QuoteModal({
                 </div>
                 <div className="flex justify-between text-base font-bold pt-2 border-t border-white/10">
                   <span className="text-white">합계</span>
-                  <span className="text-[#FF6B35]">
+                  <span className="text-[#D4AF37]">
                     {(totalAmount + vat).toLocaleString()}원
                   </span>
                 </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NavBar } from "./nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "카멜레온 콘텐츠 공장",
-  description: "AI로 SNS 콘텐츠를 원클릭 제작",
+  title: "CHAMELEON — AI 수익화 플랫폼",
+  description: "소상공인 마케팅/콘텐츠/CRM 통합 도구",
 };
 
 export default function RootLayout({
@@ -27,7 +28,10 @@ export default function RootLayout({
       lang="ko"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full bg-[#0a0a0a] text-white">{children}</body>
+      <body className="min-h-full bg-[#0a0a0a] text-white">
+        <NavBar />
+        {children}
+      </body>
     </html>
   );
 }

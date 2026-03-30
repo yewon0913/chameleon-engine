@@ -28,8 +28,8 @@ import {
 } from "recharts";
 import { trpc } from "@/lib/trpc";
 
-const CHANNEL_COLORS = ["#FF6B35", "#3B82F6", "#10B981", "#A855F7"];
-const SERVICE_COLORS = ["#FF6B35", "#F59E0B", "#3B82F6", "#10B981", "#A855F7", "#EC4899"];
+const CHANNEL_COLORS = ["#D4AF37", "#8B5CF6", "#10B981", "#EC4899"];
+const SERVICE_COLORS = ["#D4AF37", "#F5D061", "#8B5CF6", "#10B981", "#EC4899", "#3B82F6"];
 
 interface KPI {
   revenue: number;
@@ -153,7 +153,7 @@ export default function RevenuePage() {
               value={`${(kpi?.revenue ?? 0).toLocaleString()}원`}
               change={kpi?.revenueChange ?? 0}
               icon={<DollarSign size={18} />}
-              color="from-[#FF6B35] to-orange-600"
+              color="from-[#D4AF37] to-[#F5D061]"
             />
             <KPICard
               label="진행중 프로젝트"
@@ -177,10 +177,10 @@ export default function RevenuePage() {
 
           {/* Goal Progress */}
           {dashboard?.goal && (
-            <div className="mb-8 rounded-xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="mb-8 rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                  <Target size={14} className="text-[#FF6B35]" />
+                  <Target size={14} className="text-[#D4AF37]" />
                   월 목표 달성률
                 </h3>
                 <span className="text-sm text-slate-400">
@@ -189,11 +189,11 @@ export default function RevenuePage() {
               </div>
               <div className="h-3 w-full rounded-full bg-white/10 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#FF6B35] to-orange-400 transition-all duration-500"
+                  className="h-full rounded-full chameleon-gradient transition-all duration-500"
                   style={{ width: `${goalProgress}%` }}
                 />
               </div>
-              <p className="mt-2 text-right text-sm font-bold text-[#FF6B35]">
+              <p className="mt-2 text-right text-sm font-bold text-[#D4AF37]">
                 {goalProgress}%
               </p>
             </div>
@@ -202,13 +202,19 @@ export default function RevenuePage() {
           {/* Charts */}
           <div className="mb-8 grid gap-6 lg:grid-cols-2">
             {/* Monthly Revenue Bar Chart */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
               <h3 className="mb-4 text-sm font-semibold text-white">
                 월별 매출 추이
               </h3>
               {(dashboard?.monthlyRevenue?.length ?? 0) > 0 ? (
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={dashboard!.monthlyRevenue}>
+                    <defs>
+                      <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#F5D061" />
+                        <stop offset="100%" stopColor="#D4AF37" />
+                      </linearGradient>
+                    </defs>
                     <XAxis
                       dataKey="month"
                       tick={{ fill: "#94a3b8", fontSize: 11 }}
@@ -239,7 +245,7 @@ export default function RevenuePage() {
                     />
                     <Bar
                       dataKey="total"
-                      fill="#FF6B35"
+                      fill="url(#goldGrad)"
                       radius={[6, 6, 0, 0]}
                       maxBarSize={40}
                     />
@@ -251,7 +257,7 @@ export default function RevenuePage() {
             </div>
 
             {/* Channel Pie Chart */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
               <h3 className="mb-4 text-sm font-semibold text-white">
                 채널별 매출 비중
               </h3>
@@ -299,7 +305,7 @@ export default function RevenuePage() {
           </div>
 
           {/* Service Revenue Bar Chart */}
-          <div className="mb-8 rounded-xl border border-white/10 bg-white/[0.02] p-5">
+          <div className="mb-8 rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
             <h3 className="mb-4 text-sm font-semibold text-white">
               서비스별 매출
             </h3>
@@ -355,7 +361,7 @@ export default function RevenuePage() {
           </div>
 
           {/* Revenue Table */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+          <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5">
             <h3 className="mb-4 text-sm font-semibold text-white">
               고객별 수익
             </h3>
@@ -378,13 +384,13 @@ export default function RevenuePage() {
                   {revenues.map((r) => (
                     <div
                       key={r.id}
-                      className="grid grid-cols-1 sm:grid-cols-[1fr_100px_100px_80px_100px_60px] items-center gap-2 sm:gap-4 rounded-lg border border-white/5 bg-white/[0.01] px-3 py-2.5"
+                      className="grid grid-cols-1 sm:grid-cols-[1fr_100px_100px_80px_100px_60px] items-center gap-2 sm:gap-4 rounded-lg border border-[#D4AF37]/10 bg-black/30 px-3 py-2.5"
                     >
                       <span className="text-sm font-medium text-white">
                         {r.clientName || "미지정"}
                       </span>
                       <span className="text-xs text-slate-400">{r.serviceType}</span>
-                      <span className="text-sm font-semibold text-right text-[#FF6B35]">
+                      <span className="text-sm font-semibold text-right text-[#D4AF37]">
                         {r.amount.toLocaleString()}원
                       </span>
                       <button
@@ -460,7 +466,7 @@ function KPICard({
   color: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-4">
       <div className="mb-3 flex items-center justify-between">
         <div
           className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${color}`}
@@ -479,7 +485,7 @@ function KPICard({
           </span>
         )}
       </div>
-      <p className="text-lg font-bold text-white">{value}</p>
+      <p className="text-lg font-bold text-[#F5D061]">{value}</p>
       <p className="text-[11px] text-slate-500">{label}</p>
     </div>
   );
@@ -539,7 +545,7 @@ function AddRevenueModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111] p-6">
+      <div className="w-full max-w-md rounded-2xl border border-[#D4AF37]/20 bg-[#0d0d0d] p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">매출 등록</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white">
@@ -554,7 +560,7 @@ function AddRevenueModal({
               value={form.amount}
               onChange={(e) => setForm((p) => ({ ...p, amount: e.target.value }))}
               placeholder="150000"
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#FF6B35]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
             />
           </div>
           <div>
@@ -567,7 +573,7 @@ function AddRevenueModal({
                   onClick={() => setForm((p) => ({ ...p, serviceType: s }))}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                     form.serviceType === s
-                      ? "bg-[#FF6B35] text-white"
+                      ? "bg-[#D4AF37] text-white"
                       : "bg-white/5 text-slate-400 hover:bg-white/10"
                   }`}
                 >
@@ -586,7 +592,7 @@ function AddRevenueModal({
                   onClick={() => setForm((p) => ({ ...p, channel: c }))}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                     form.channel === c
-                      ? "bg-[#FF6B35] text-white"
+                      ? "bg-[#D4AF37] text-white"
                       : "bg-white/5 text-slate-400 hover:bg-white/10"
                   }`}
                 >
@@ -652,7 +658,7 @@ function GoalModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#111] p-6">
+      <div className="w-full max-w-sm rounded-2xl border border-[#D4AF37]/20 bg-[#0d0d0d] p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">월 목표 설정</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white">
@@ -666,7 +672,7 @@ function GoalModal({
               type="month"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#FF6B35]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
             />
           </div>
           <div>
@@ -676,7 +682,7 @@ function GoalModal({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="3000000"
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#FF6B35]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -687,7 +693,7 @@ function GoalModal({
                 onClick={() => setAmount(String(p.value))}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   amount === String(p.value)
-                    ? "bg-[#FF6B35] text-white"
+                    ? "bg-[#D4AF37] text-white"
                     : "bg-white/5 text-slate-400 hover:bg-white/10"
                 }`}
               >
