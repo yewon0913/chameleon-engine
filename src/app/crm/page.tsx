@@ -101,11 +101,11 @@ export default function CRMPage() {
             대시보드
           </Link>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#F5D061] shadow-lg">
-              <Users size={20} className="text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl chameleon-bg shadow-lg">
+              <Users size={20} className="text-[#0a0a0a]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">고객 관리</h1>
+              <h1 className="text-2xl font-bold chameleon-text">고객 관리</h1>
               <p className="text-sm text-slate-400">
                 마케팅 프로젝트 관리
               </p>
@@ -114,7 +114,7 @@ export default function CRMPage() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="btn-accent flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white"
+          className="btn-accent flex items-center gap-2 px-4 py-2.5 text-sm font-semibold"
         >
           <Plus size={16} />
           신규 고객
@@ -127,7 +127,7 @@ export default function CRMPage() {
           onClick={() => setFilterStatus("")}
           className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             !filterStatus
-              ? "bg-[#D4AF37]/20 text-[#D4AF37]"
+              ? "chameleon-badge"
               : "bg-white/5 text-slate-400 hover:bg-white/10"
           }`}
         >
@@ -141,7 +141,7 @@ export default function CRMPage() {
             }
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               filterStatus === s.label
-                ? "bg-[#D4AF37]/20 text-[#D4AF37]"
+                ? "chameleon-badge"
                 : "bg-white/5 text-slate-400 hover:bg-white/10"
             }`}
           >
@@ -161,7 +161,7 @@ export default function CRMPage() {
           placeholder="이름, 업종, 사업장명으로 검색..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-[#D4AF37]/15 bg-black/40 py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-[#D4AF37]/50 focus:outline-none"
+          className="w-full rounded-xl border border-[#D4AF37]/15 bg-black/40 py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:outline-none"
         />
       </div>
 
@@ -202,7 +202,7 @@ export default function CRMPage() {
             <Link
               key={client.id}
               href={`/crm/${client.id}`}
-              className="group grid grid-cols-1 sm:grid-cols-[1fr_100px_100px_120px_80px_40px] items-center gap-2 sm:gap-4 rounded-xl border border-[#D4AF37]/10 bg-black/40 p-4 transition-all hover:border-[#D4AF37]/30 hover:bg-[#D4AF37]/5"
+              className="group grid grid-cols-1 sm:grid-cols-[1fr_100px_100px_120px_80px_40px] items-center gap-2 sm:gap-4 rounded-xl chameleon-border-slow bg-black/40 p-4 transition-all hover:chameleon-glow"
             >
               <div>
                 <p className="font-semibold text-white">{client.name}</p>
@@ -238,7 +238,7 @@ export default function CRMPage() {
               </span>
               <ChevronRight
                 size={16}
-                className="text-slate-600 group-hover:text-[#D4AF37] transition-colors"
+                className="text-slate-600 group-hover:chameleon-icon transition-colors"
               />
             </Link>
           ))}
@@ -355,7 +355,7 @@ function Input({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
+        className="w-full rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
       />
     </div>
   );

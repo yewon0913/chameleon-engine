@@ -133,7 +133,7 @@ export default function ClientDetailPage() {
     return (
       <div className="py-20 text-center">
         <p className="text-slate-400">고객을 찾을 수 없습니다</p>
-        <Link href="/crm" className="mt-4 inline-block text-[#D4AF37]">
+        <Link href="/crm" className="mt-4 inline-block chameleon-text">
           목록으로
         </Link>
       </div>
@@ -167,7 +167,7 @@ export default function ClientDetailPage() {
         </div>
         <button
           onClick={() => setShowQuote(true)}
-          className="btn-accent flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white shrink-0"
+          className="btn-accent flex items-center gap-2 px-4 py-2.5 text-sm font-semibold shrink-0"
         >
           <FileText size={16} />
           견적서 생성
@@ -190,9 +190,9 @@ export default function ClientDetailPage() {
                 onClick={() => changeStatus(step)}
                 className={`relative shrink-0 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                   isActive
-                    ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/20"
+                    ? "chameleon-bg text-[#0a0a0a] shadow-lg chameleon-glow"
                     : isPast
-                    ? "bg-[#D4AF37]/10 text-[#D4AF37]"
+                    ? "chameleon-bg-subtle chameleon-border-slow"
                     : "bg-white/5 text-slate-500 hover:bg-white/10"
                 }`}
               >
@@ -272,7 +272,7 @@ export default function ClientDetailPage() {
                     <div className="flex items-center gap-3">
                       <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-[#D4AF37] to-[#F5D061] transition-all"
+                          className="h-full rounded-full chameleon-gradient transition-all"
                           style={{ width: `${p.progress}%` }}
                         />
                       </div>
@@ -290,7 +290,7 @@ export default function ClientDetailPage() {
 
                 <div className="flex justify-between pt-2 border-t border-[#D4AF37]/10">
                   <span className="text-xs text-slate-400">총 금액</span>
-                  <span className="text-sm font-semibold text-[#D4AF37]">
+                  <span className="text-sm font-semibold chameleon-text">
                     {totalAmount.toLocaleString()}원
                   </span>
                 </div>
@@ -314,14 +314,14 @@ export default function ClientDetailPage() {
                 onChange={(e) => setNoteText(e.target.value)}
                 placeholder="상담 내용을 기록하세요..."
                 rows={3}
-                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none resize-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none resize-none"
               />
               <input
                 type="text"
                 value={noteAction}
                 onChange={(e) => setNoteAction(e.target.value)}
                 placeholder="다음 액션 (선택)"
-                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none"
               />
               <button
                 onClick={addNote}
@@ -342,14 +342,14 @@ export default function ClientDetailPage() {
                 {client.notes.map((note) => (
                   <div
                     key={note.id}
-                    className="relative border-l-2 border-[#D4AF37]/30 pl-3"
+                    className="relative border-l-2 border-purple-500/30 pl-3"
                   >
-                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#D4AF37]" />
+                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full chameleon-bg" />
                     <p className="text-xs text-slate-300 whitespace-pre-wrap">
                       {note.content}
                     </p>
                     {note.nextAction && (
-                      <p className="mt-1 text-[10px] text-[#D4AF37]">
+                      <p className="mt-1 text-[10px] chameleon-text">
                         → {note.nextAction}
                       </p>
                     )}
@@ -456,7 +456,7 @@ function AddProjectModal({
             <select
               value={type}
               onChange={(e) => handleTypeChange(e.target.value)}
-              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none"
             >
               {PROJECT_TYPES.map((t) => (
                 <option key={t.value} value={t.value} className="bg-[#111]">
@@ -473,7 +473,7 @@ function AddProjectModal({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -484,7 +484,7 @@ function AddProjectModal({
                 min={1}
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
-                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none"
               />
             </div>
             <div>
@@ -496,7 +496,7 @@ function AddProjectModal({
                 min={0}
                 value={unitPrice}
                 onChange={(e) => setUnitPrice(Number(e.target.value))}
-                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
+                className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none"
               />
             </div>
           </div>
@@ -508,12 +508,12 @@ function AddProjectModal({
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none"
             />
           </div>
           <div className="flex items-center justify-between border-t border-[#D4AF37]/10 pt-3">
             <span className="text-sm text-slate-400">합계</span>
-            <span className="text-lg font-bold text-[#D4AF37]">
+            <span className="text-lg font-bold chameleon-text">
               {(quantity * unitPrice).toLocaleString()}원
             </span>
           </div>
@@ -614,7 +614,7 @@ function QuoteModal({
         {/* Quote Content */}
         <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-5 mb-4">
           <div className="text-center mb-4">
-            <p className="text-lg font-bold text-[#D4AF37]">
+            <p className="text-lg font-bold chameleon-text">
               카멜레온 콘텐츠 공장
             </p>
             <p className="text-xl font-bold text-white mt-1">견적서</p>
@@ -668,7 +668,7 @@ function QuoteModal({
                 </div>
                 <div className="flex justify-between text-base font-bold pt-2 border-t border-white/10">
                   <span className="text-white">합계</span>
-                  <span className="text-[#D4AF37]">
+                  <span className="chameleon-text">
                     {(totalAmount + vat).toLocaleString()}원
                   </span>
                 </div>

@@ -115,11 +115,11 @@ export default function RevenuePage() {
         </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
-              <DollarSign size={20} className="text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl chameleon-bg shadow-lg">
+              <DollarSign size={20} className="text-[#0a0a0a]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">수익 대시보드</h1>
+              <h1 className="text-2xl font-bold chameleon-text">수익 대시보드</h1>
               <p className="text-sm text-slate-400">매출과 성과를 한눈에</p>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function RevenuePage() {
                   style={{ width: `${goalProgress}%` }}
                 />
               </div>
-              <p className="mt-2 text-right text-sm font-bold text-[#D4AF37]">
+              <p className="mt-2 text-right text-sm font-bold chameleon-text">
                 {goalProgress}%
               </p>
             </div>
@@ -390,15 +390,15 @@ export default function RevenuePage() {
                         {r.clientName || "미지정"}
                       </span>
                       <span className="text-xs text-slate-400">{r.serviceType}</span>
-                      <span className="text-sm font-semibold text-right text-[#D4AF37]">
+                      <span className="text-sm font-semibold text-right chameleon-text">
                         {r.amount.toLocaleString()}원
                       </span>
                       <button
                         onClick={() => toggleSettle(r.id, r.status)}
                         className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
                           r.status === "정산완료"
-                            ? "bg-emerald-500/20 text-emerald-300"
-                            : "bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30"
+                            ? "chameleon-badge"
+                            : "bg-white/10 text-slate-400 hover:bg-white/15"
                         }`}
                       >
                         {r.status}
@@ -466,7 +466,7 @@ function KPICard({
   color: string;
 }) {
   return (
-    <div className="rounded-xl border border-[#D4AF37]/15 bg-black/40 p-4">
+    <div className="rounded-xl chameleon-border-slow bg-black/40 p-4">
       <div className="mb-3 flex items-center justify-between">
         <div
           className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${color}`}
@@ -485,7 +485,7 @@ function KPICard({
           </span>
         )}
       </div>
-      <p className="text-lg font-bold text-[#F5D061]">{value}</p>
+      <p className="text-lg font-bold chameleon-text">{value}</p>
       <p className="text-[11px] text-slate-500">{label}</p>
     </div>
   );
@@ -560,7 +560,7 @@ function AddRevenueModal({
               value={form.amount}
               onChange={(e) => setForm((p) => ({ ...p, amount: e.target.value }))}
               placeholder="150000"
-              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
             />
           </div>
           <div>
@@ -573,7 +573,7 @@ function AddRevenueModal({
                   onClick={() => setForm((p) => ({ ...p, serviceType: s }))}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                     form.serviceType === s
-                      ? "bg-[#D4AF37] text-white"
+                      ? "chameleon-bg text-[#0a0a0a]"
                       : "bg-white/5 text-slate-400 hover:bg-white/10"
                   }`}
                 >
@@ -592,7 +592,7 @@ function AddRevenueModal({
                   onClick={() => setForm((p) => ({ ...p, channel: c }))}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                     form.channel === c
-                      ? "bg-[#D4AF37] text-white"
+                      ? "chameleon-bg text-[#0a0a0a]"
                       : "bg-white/5 text-slate-400 hover:bg-white/10"
                   }`}
                 >
@@ -604,7 +604,7 @@ function AddRevenueModal({
           <button
             type="submit"
             disabled={saving || !form.amount}
-            className="btn-accent w-full py-2.5 text-sm font-semibold text-white"
+            className="btn-accent w-full py-2.5 text-sm font-semibold"
           >
             {saving ? "저장 중..." : "매출 등록"}
           </button>
@@ -672,7 +672,7 @@ function GoalModal({
               type="month"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#D4AF37]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none"
             />
           </div>
           <div>
@@ -682,7 +682,7 @@ function GoalModal({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="3000000"
-              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
+              className="w-full rounded-lg border border-[#D4AF37]/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -693,7 +693,7 @@ function GoalModal({
                 onClick={() => setAmount(String(p.value))}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   amount === String(p.value)
-                    ? "bg-[#D4AF37] text-white"
+                    ? "chameleon-bg text-[#0a0a0a]"
                     : "bg-white/5 text-slate-400 hover:bg-white/10"
                 }`}
               >
@@ -704,7 +704,7 @@ function GoalModal({
           <button
             type="submit"
             disabled={saving || !amount}
-            className="btn-accent w-full py-2.5 text-sm font-semibold text-white"
+            className="btn-accent w-full py-2.5 text-sm font-semibold"
           >
             {saving ? "저장 중..." : "목표 설정"}
           </button>

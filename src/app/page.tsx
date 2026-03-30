@@ -52,11 +52,11 @@ export default function ChameleonDashboard() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       {/* Hero */}
-      <div className="mb-12 text-center">
+      <div className="mb-4 text-center">
         <h1 className="chameleon-text text-4xl font-extrabold tracking-tight sm:text-5xl">
           CHAMELEON
         </h1>
-        <p className="mt-3 text-lg font-semibold text-[#D4AF37]">
+        <p className="mt-3 text-lg font-semibold chameleon-text">
           AI 수익화 플랫폼
         </p>
         <p className="mt-1 text-sm text-slate-500">
@@ -64,28 +64,36 @@ export default function ChameleonDashboard() {
         </p>
       </div>
 
+      {/* Chameleon divider */}
+      <div className="chameleon-underline mx-auto mb-10 w-32 rounded-full" />
+
       {/* Module Grid */}
       <div className="grid gap-4 sm:grid-cols-2">
         {MODULES.map((m) => (
           <Link
             key={m.label}
             href={m.href}
-            className={`group card-luxury p-6 transition-all ${
+            className={`group relative overflow-hidden rounded-2xl p-6 transition-all ${
               m.ready
-                ? "hover:scale-[1.01]"
-                : "opacity-40 pointer-events-none"
+                ? "card-luxury hover:scale-[1.01]"
+                : "card-luxury opacity-40 pointer-events-none"
             }`}
           >
             <div className="relative">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#F5D061] shadow-lg shadow-[#D4AF37]/20">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl chameleon-bg shadow-lg">
                 <m.icon size={22} className="text-[#0a0a0a]" />
               </div>
-              <h2 className="mt-4 text-lg font-bold text-white group-hover:text-[#F5D061] transition-colors">
+              <h2 className="mt-4 text-lg font-bold text-white group-hover:chameleon-text transition-colors">
                 {m.label}
               </h2>
               <p className="mt-1 text-sm text-slate-500">{m.desc}</p>
+              {m.ready && (
+                <span className="mt-3 inline-block chameleon-badge">
+                  활성
+                </span>
+              )}
               {!m.ready && (
-                <span className="mt-3 inline-block rounded-full bg-[#D4AF37]/10 px-3 py-0.5 text-[10px] font-medium text-[#D4AF37]">
+                <span className="mt-3 inline-block rounded-full bg-white/10 px-3 py-0.5 text-[10px] font-medium text-slate-400">
                   Coming Soon
                 </span>
               )}

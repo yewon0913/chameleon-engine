@@ -209,10 +209,10 @@ export default function ChameleonContentPage() {
         >
           <ChevronLeft size={16} /> 홈
         </Link>
-        <p className="text-[10px] font-medium uppercase tracking-widest text-[#D4AF37]/60">
+        <p className="text-[10px] font-medium uppercase tracking-widest chameleon-text">
           Content Factory
         </p>
-        <h1 className="mt-1 text-2xl font-extrabold text-white">
+        <h1 className="mt-1 text-2xl font-extrabold chameleon-text">
           콘텐츠 공장
         </h1>
         <p className="mt-1 text-sm text-slate-500">
@@ -229,7 +229,7 @@ export default function ChameleonContentPage() {
             className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition-all ${
               tab === t.key
                 ? "chameleon-gradient text-white shadow-lg"
-                : "bg-white/5 text-slate-400 hover:text-[#D4AF37] hover:bg-[#D4AF37]/5"
+                : "chameleon-border-slow text-slate-400 hover:text-white hover:chameleon-bg-subtle"
             }`}
           >
             <t.icon size={14} />
@@ -285,7 +285,7 @@ export default function ChameleonContentPage() {
         <button
           onClick={handleGenerate}
           disabled={!canGenerate() || generating}
-          className="btn-gold mt-6 w-full py-3.5 text-sm font-bold disabled:opacity-35 flex items-center justify-center gap-2"
+          className="btn-gold mt-6 w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2"
         >
           {generating ? (
             <><Loader2 size={16} className="animate-spin" /> AI 생성 중...</>
@@ -300,32 +300,30 @@ export default function ChameleonContentPage() {
         <div className="card-luxury shadow-xl overflow-hidden">
           {generating ? (
             <div className="flex flex-col items-center py-16 gap-3">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full chameleon-gradient">
-                <Loader2 size={24} className="animate-spin text-white" />
-              </div>
+              <div className="chameleon-spinner" />
               <p className="text-sm font-medium text-white">AI가 콘텐츠를 제작 중입니다...</p>
               <p className="text-[10px] text-slate-500">30초~1분 정도 소요됩니다</p>
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between px-6 py-4 border-b border-[#D4AF37]/10">
-                <h3 className="text-sm font-bold text-[#D4AF37]">생성 결과</h3>
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+                <h3 className="text-sm font-bold chameleon-text">생성 결과</h3>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 rounded-lg bg-[#D4AF37]/5 border border-[#D4AF37]/20 px-3 py-1.5 text-xs text-slate-400 hover:text-[#D4AF37] transition-colors"
+                    className="flex items-center gap-1.5 rounded-lg chameleon-bg px-3 py-1.5 text-xs text-[#0a0a0a] font-semibold hover:shadow-lg transition-colors"
                   >
                     {copied ? <><Check size={12} className="text-emerald-400" /> 복사됨</> : <><Copy size={12} /> 복사</>}
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="flex items-center gap-1.5 rounded-lg bg-[#D4AF37]/5 border border-[#D4AF37]/20 px-3 py-1.5 text-xs text-slate-400 hover:text-[#D4AF37] transition-colors"
+                    className="flex items-center gap-1.5 rounded-lg chameleon-bg px-3 py-1.5 text-xs text-[#0a0a0a] font-semibold hover:shadow-lg transition-colors"
                   >
                     <Download size={12} /> 다운로드
                   </button>
                 </div>
               </div>
-              <div className="px-6 py-5 max-h-[700px] overflow-y-auto prose prose-invert prose-sm max-w-none prose-headings:text-white prose-headings:font-bold prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-h3:text-sm prose-h3:mt-4 prose-h3:mb-1 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-[#D4AF37] prose-code:text-[#D4AF37] prose-code:bg-[#D4AF37]/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-hr:my-4 prose-hr:border-[#D4AF37]/10">
+              <div className="px-6 py-5 max-h-[700px] overflow-y-auto chameleon-bg-subtle rounded-b-2xl prose prose-invert prose-sm max-w-none prose-headings:text-white prose-headings:font-bold prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-h3:text-sm prose-h3:mt-4 prose-h3:mb-1 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-[#F5D061] prose-code:text-[#F5D061] prose-code:bg-[#F5D061]/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-hr:my-4 prose-hr:border-white/10">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
               </div>
             </>
@@ -341,7 +339,7 @@ export default function ChameleonContentPage() {
    ═══════════════════════════════════════════ */
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <label className="block text-xs font-medium text-[#D4AF37]/70 mb-2">{children}</label>;
+  return <label className="block text-xs font-medium chameleon-text mb-2">{children}</label>;
 }
 
 function SelectGrid({
@@ -362,10 +360,10 @@ function SelectGrid({
           key={o.key}
           type="button"
           onClick={() => onChange(o.key)}
-          className={`rounded-xl border p-3 text-left transition-all ${
+          className={`rounded-xl p-3 text-left transition-all ${
             value === o.key
-              ? "border-[#D4AF37]/40 bg-[#D4AF37]/10 text-white"
-              : "border-[#D4AF37]/10 bg-black/30 text-slate-400 hover:border-[#D4AF37]/25 hover:text-white"
+              ? "chameleon-border chameleon-bg-subtle text-white chameleon-glow"
+              : "chameleon-border-slow bg-black/30 text-slate-400 hover:text-white"
           }`}
         >
           <p className="text-xs font-medium">{o.label}</p>
@@ -394,8 +392,8 @@ function ToggleGroup({
           onClick={() => onChange(o.key)}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
             value === o.key
-              ? "bg-gradient-to-r from-[#D4AF37] to-[#F5D061] text-[#0a0a0a]"
-              : "bg-white/5 text-slate-400 hover:text-[#D4AF37]"
+              ? "chameleon-bg text-[#0a0a0a]"
+              : "bg-white/5 text-slate-400 hover:text-white"
           }`}
         >
           {o.label}
@@ -417,7 +415,7 @@ function TextInput({
   multiline?: boolean;
 }) {
   const cls =
-    "w-full rounded-xl border border-[#D4AF37]/15 bg-black/40 px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:border-[#D4AF37]/50 focus:outline-none focus:shadow-[0_0_15px_rgba(212,175,55,0.1)]";
+    "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:chameleon-border transition-all";
   if (multiline) {
     return (
       <textarea

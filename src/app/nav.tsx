@@ -21,29 +21,39 @@ function ChameleonLogo() {
       xmlns="http://www.w3.org/2000/svg"
       className="shrink-0"
     >
+      <defs>
+        <linearGradient id="chameleonLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#8B5CF6">
+            <animate attributeName="stop-color" values="#8B5CF6;#10B981;#F5D061;#EC4899;#8B5CF6" dur="8s" repeatCount="indefinite" />
+          </stop>
+          <stop offset="100%" stopColor="#10B981">
+            <animate attributeName="stop-color" values="#10B981;#F5D061;#EC4899;#8B5CF6;#10B981" dur="8s" repeatCount="indefinite" />
+          </stop>
+        </linearGradient>
+      </defs>
       <path
         d="M12 3C7.5 3 4 6 4 10c0 2.5 1.2 4.5 3 5.8V18c0 1.1.9 2 2 2h1l1-2h2l1 2h1c1.1 0 2-.9 2-2v-2.2c1.8-1.3 3-3.3 3-5.8 0-4-3.5-7-7-7z"
-        stroke="#D4AF37"
+        stroke="url(#chameleonLogoGrad)"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="9.5" cy="9.5" r="1" fill="#D4AF37" />
+      <circle cx="9.5" cy="9.5" r="1" fill="url(#chameleonLogoGrad)" />
       <path
         d="M15 10c0 .5-.2 1-.5 1.3-.3.4-.8.7-1.5.7"
-        stroke="#D4AF37"
+        stroke="url(#chameleonLogoGrad)"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
       <path
         d="M3 11c-1 .5-1.5 1.5-1 2.5s2 1.5 3 1"
-        stroke="#D4AF37"
+        stroke="url(#chameleonLogoGrad)"
         strokeWidth="1.2"
         strokeLinecap="round"
       />
       <path
         d="M17 8l2.5-1.5"
-        stroke="#D4AF37"
+        stroke="url(#chameleonLogoGrad)"
         strokeWidth="1.2"
         strokeLinecap="round"
       />
@@ -55,7 +65,7 @@ export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-[#D4AF37]/10 bg-[#0a0a0a]/80 backdrop-blur-xl">
+    <nav className="sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -73,19 +83,28 @@ export function NavBar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                  active
-                    ? "bg-[#D4AF37]/10 text-[#F5D061]"
-                    : "text-slate-500 hover:text-[#D4AF37] hover:bg-white/5"
-                }`}
+                className="relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all group"
               >
-                <item.icon size={14} />
-                <span className="hidden sm:inline">{item.label}</span>
+                <span className={active ? "chameleon-icon" : "text-slate-500 group-hover:chameleon-icon"}>
+                  <item.icon size={14} />
+                </span>
+                <span className={`hidden sm:inline ${
+                  active
+                    ? "chameleon-text"
+                    : "text-slate-500 group-hover:text-white"
+                }`}>
+                  {item.label}
+                </span>
+                {active && (
+                  <span className="absolute bottom-0 left-2 right-2 chameleon-underline rounded-full" />
+                )}
               </Link>
             );
           })}
         </div>
       </div>
+      {/* Nav bottom border */}
+      <div className="chameleon-underline opacity-30" />
     </nav>
   );
 }

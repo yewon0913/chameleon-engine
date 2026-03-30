@@ -21,96 +21,195 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* ── Chameleon Color Shift Animation ── */
-@keyframes chameleon-shift {
+/* ═══════════════════════════════════════════
+   카멜레온 색변환 시스템
+   ═══════════════════════════════════════════ */
+
+/* ── 속도별 그라디언트 애니메이션 ── */
+@keyframes chameleon-slow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
+@keyframes chameleon-medium {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes chameleon-fast {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── 보더 색변환 ── */
+@keyframes chameleon-border-shift {
+  0% { border-color: rgba(139, 92, 246, 0.3); }
+  25% { border-color: rgba(16, 185, 129, 0.3); }
+  50% { border-color: rgba(245, 208, 97, 0.3); }
+  75% { border-color: rgba(236, 72, 153, 0.3); }
+  100% { border-color: rgba(139, 92, 246, 0.3); }
+}
+
+/* ── 글로우 색변환 ── */
+@keyframes chameleon-glow-shift {
+  0% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.25); }
+  25% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.25); }
+  50% { box-shadow: 0 0 20px rgba(245, 208, 97, 0.25); }
+  75% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.25); }
+  100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.25); }
+}
+
+/* ── 스피너 회전 ── */
+@keyframes chameleon-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════
+   카멜레온 클래스
+   ═══════════════════════════════════════════ */
+
+/* 배경 그라디언트 (불투명) */
 .chameleon-gradient {
   background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061, #EC4899, #8B5CF6);
   background-size: 400% 400%;
-  animation: chameleon-shift 8s ease infinite;
+  animation: chameleon-slow 8s ease infinite;
 }
 
+.chameleon-bg {
+  background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061, #EC4899, #8B5CF6);
+  background-size: 400% 400%;
+  animation: chameleon-slow 10s ease infinite;
+}
+
+/* 배경 그라디언트 (반투명) */
+.chameleon-bg-subtle {
+  background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(16,185,129,0.12), rgba(245,208,97,0.12), rgba(236,72,153,0.12), rgba(139,92,246,0.12));
+  background-size: 400% 400%;
+  animation: chameleon-slow 12s ease infinite;
+}
+
+/* 텍스트 색변환 */
 .chameleon-text {
   background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061, #EC4899, #8B5CF6);
   background-size: 400% 400%;
-  animation: chameleon-shift 8s ease infinite;
+  animation: chameleon-slow 8s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ── Luxury Card ── */
+/* 아이콘 색변환 */
+.chameleon-icon {
+  background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061, #EC4899);
+  background-size: 400% 400%;
+  animation: chameleon-slow 8s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 보더 색변환 */
+.chameleon-border {
+  border: 1px solid;
+  animation: chameleon-border-shift 8s ease infinite;
+}
+
+.chameleon-border-slow {
+  border: 1px solid;
+  animation: chameleon-border-shift 12s ease infinite;
+}
+
+/* 글로우 색변환 */
+.chameleon-glow {
+  animation: chameleon-glow-shift 8s ease infinite;
+}
+
+/* 언더라인 색변환 */
+.chameleon-underline {
+  background: linear-gradient(90deg, #8B5CF6, #10B981, #F5D061, #EC4899, #8B5CF6);
+  background-size: 400% 400%;
+  animation: chameleon-slow 8s ease infinite;
+  height: 2px;
+}
+
+/* 뱃지 색변환 */
+.chameleon-badge {
+  background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061);
+  background-size: 300% 300%;
+  animation: chameleon-slow 6s ease infinite;
+  color: #0a0a0a;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+}
+
+/* 로딩 스피너 */
+.chameleon-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #8B5CF6;
+  border-right-color: #10B981;
+  border-bottom-color: #F5D061;
+  border-left-color: #EC4899;
+  animation: chameleon-spin 1s linear infinite;
+}
+
+/* ═══════════════════════════════════════════
+   카드/버튼 시스템
+   ═══════════════════════════════════════════ */
+
+/* Luxury Card + chameleon hover */
 .card-luxury {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  border: 1px solid;
   border-radius: 16px;
   transition: all 0.3s;
+  animation: chameleon-border-shift 12s ease infinite;
 }
 .card-luxury:hover {
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+  animation: chameleon-glow-shift 4s ease infinite, chameleon-border-shift 4s ease infinite;
 }
 
-/* ── Gold Glow ── */
+/* Glass card */
+.glass-card {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid;
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  animation: chameleon-border-shift 12s ease infinite;
+}
+
+/* Gold Glow (legacy) */
 .gold-glow {
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
 }
 
-/* ── Gold Button ── */
-.btn-gold {
-  background: linear-gradient(135deg, #D4AF37, #F5D061);
-  color: #0a0a0a;
-  font-weight: 600;
-  border-radius: 12px;
-  transition: all 0.3s;
-}
-.btn-gold:hover:not(:disabled) {
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
-  transform: translateY(-1px);
-}
-.btn-gold:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* ── Ghost Button (gold border) ── */
-.btn-ghost {
-  background: rgba(212, 175, 55, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  border-radius: 12px;
-  transition: all 0.2s;
-}
-.btn-ghost:hover {
-  background: rgba(212, 175, 55, 0.1);
-  border-color: rgba(212, 175, 55, 0.4);
-}
-
-/* ── Glass Card (legacy compat) ── */
-.glass-card {
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  backdrop-filter: blur(12px);
-}
-
-/* ── btn-accent → gold alias ── */
+/* ── 버튼 ── */
+.btn-gold,
 .btn-accent {
-  background: linear-gradient(135deg, #D4AF37, #F5D061);
+  background: linear-gradient(135deg, #8B5CF6, #10B981, #F5D061, #EC4899, #8B5CF6);
+  background-size: 400% 400%;
+  animation: chameleon-slow 8s ease infinite;
   color: #0a0a0a;
   font-weight: 600;
   border-radius: 12px;
-  transition: all 0.3s;
+  transition: transform 0.2s, box-shadow 0.3s;
 }
+.btn-gold:hover:not(:disabled),
 .btn-accent:hover:not(:disabled) {
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  animation: chameleon-fast 3s ease infinite;
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
   transform: translateY(-1px);
 }
+.btn-gold:disabled,
 .btn-accent:disabled {
   opacity: 0.35;
   cursor: not-allowed;
@@ -118,13 +217,31 @@ body {
   box-shadow: none;
 }
 
-/* ── Subtle shimmer for gold elements ── */
-@keyframes gold-shimmer {
-  0% { opacity: 0.7; }
-  50% { opacity: 1; }
-  100% { opacity: 0.7; }
+.btn-ghost {
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid;
+  border-radius: 12px;
+  transition: all 0.2s;
+  animation: chameleon-border-shift 12s ease infinite;
+}
+.btn-ghost:hover {
+  background: rgba(139, 92, 246, 0.1);
+  animation: chameleon-border-shift 4s ease infinite;
 }
 
-.gold-shimmer {
-  animation: gold-shimmer 3s ease-in-out infinite;
+/* ═══════════════════════════════════════════
+   커스텀 스크롤바
+   ═══════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #111;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8B5CF6, #10B981, #F5D061, #EC4899);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #A78BFA, #34D399, #FBBF24, #F472B6);
 }
