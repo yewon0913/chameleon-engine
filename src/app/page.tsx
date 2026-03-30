@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Film, FileText, PenTool, Users } from "lucide-react";
+import { Film, FileText, PenTool, Users, ClipboardList } from "lucide-react";
 
 const MODULES = [
   {
@@ -13,19 +13,27 @@ const MODULES = [
     ready: true,
   },
   {
+    href: "/crm",
+    icon: Users,
+    label: "고객 관리 (CRM)",
+    desc: "마케팅 고객 관리, 프로젝트 추적, 견적서 생성",
+    color: "from-blue-500 to-cyan-600",
+    ready: true,
+  },
+  {
+    href: "/intake",
+    icon: ClipboardList,
+    label: "고객 설문",
+    desc: "신규 고객 마케팅 상담 설문 페이지",
+    color: "from-emerald-500 to-teal-600",
+    ready: true,
+  },
+  {
     href: "#",
     icon: PenTool,
     label: "브랜딩 스튜디오",
     desc: "로고, 네이밍, 슬로건, 브랜드 가이드 AI 생성",
     color: "from-purple-500 to-violet-600",
-    ready: false,
-  },
-  {
-    href: "#",
-    icon: Users,
-    label: "고객 분석기",
-    desc: "타겟 페르소나, 고객 여정, 경쟁사 분석",
-    color: "from-blue-500 to-cyan-600",
     ready: false,
   },
   {
