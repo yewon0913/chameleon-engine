@@ -280,12 +280,15 @@ export default function CalendarPage() {
       {/* AI Planning Modal */}
       {showAI && (
         <AIPlanModal
-          year={year}
-          month={month}
           onClose={() => setShowAI(false)}
-          onPlanned={(newItems) => {
+          onPlanned={(newItems, targetYear, targetMonth) => {
             setShowAI(false);
             if (newItems && newItems.length > 0) {
+              // 캘린더를 생성된 콘텐츠의 월로 자동 이동
+              if (targetYear && targetMonth) {
+                setYear(targetYear);
+                setMonth(targetMonth);
+              }
               setItems((prev) => [...prev, ...newItems]);
             } else {
               load();
@@ -417,53 +420,44 @@ function ContentModal({
 }
 
 function AIPlanModal({
-  year,
-  month,
   onClose,
   onPlanned,
 }: {
-  year: number;
-  month: number;
   onClose: () => void;
-  onPlanned: (newItems?: CalendarItem[]) => void;
+  onPlanned: (newItems?: CalendarItem[], targetYear?: number, targetMonth?: number) => void;
 }) {
   const [form, setForm] = useState({ industry: "", target: "", contentCount: 20 });
   const [planning, setPlanning] = useState(false);
   const [result, setResult] = useState<{ date: string; title: string; contentType: string; channels: string[] }[] | null>(null);
   const [saving, setSaving] = useState(false);
+  const [planRange, setPlanRange] = useState({ start: "", end: "" });
 
-  const monthStr = `${year}-${String(month).padStart(2, "0")}`;
-  const daysInMonth = new Date(year, month, 0).getDate();
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   const handlePlan = async () => {
     if (!form.industry.trim()) return;
     setPlanning(true);
     try {
       const data = await trpc.calendar.aiPlan.mutate({
-        year,
-        month,
         industry: form.industry,
         target: form.target || "일반 소비자",
         contentCount: form.contentCount,
       });
       if (Array.isArray(data.plan)) {
-        // 날짜 유효성 검증 — 현재 월에 맞게 보정
-        const validated = data.plan.map((item: { date?: string; title?: string; contentType?: string; channels?: string[] }) => {
-          let dateStr = item.date || "";
-          // 날짜가 현재 월과 안 맞으면 보정
-          if (!dateStr.startsWith(monthStr)) {
-            const dayMatch = dateStr.match(/-(\d{2})$/);
-            const day = dayMatch ? Math.min(Number(dayMatch[1]), daysInMonth) : 1;
-            dateStr = `${monthStr}-${String(day).padStart(2, "0")}`;
-          }
-          return {
-            date: dateStr,
+        // 과거 날짜 필터링 — 오늘 이후만 유지
+        const validated = data.plan
+          .map((item: { date?: string; title?: string; contentType?: string; channels?: string[] }) => ({
+            date: item.date || "",
             title: item.title || "콘텐츠",
             contentType: item.contentType || "릴스",
             channels: item.channels || [],
-          };
-        });
+          }))
+          .filter((item: { date: string }) => item.date > todayStr);
         setResult(validated);
+        setPlanRange({ start: data.startDate || "", end: data.endDate || "" });
       } else {
         alert("AI 응답을 파싱할 수 없습니다. 다시 시도해주세요.");
       }
@@ -475,7 +469,7 @@ function AIPlanModal({
   };
 
   const handleSaveAll = async () => {
-    if (!result) return;
+    if (!result || result.length === 0) return;
     setSaving(true);
     try {
       const created = await trpc.calendar.batchCreate.mutate({
@@ -486,8 +480,14 @@ function AIPlanModal({
           channels: item.channels,
         })),
       });
-      // DB에서 반환된 데이터로 즉시 state 업데이트
-      onPlanned(created as unknown as CalendarItem[]);
+      // 가장 많은 항목이 있는 월로 캘린더 자동 이동
+      const firstDate = result[0]?.date;
+      if (firstDate) {
+        const [y, m] = firstDate.split("-").map(Number);
+        onPlanned(created as unknown as CalendarItem[], y, m);
+      } else {
+        onPlanned(created as unknown as CalendarItem[]);
+      }
     } catch {
       alert("저장 실패");
       setSaving(false);
@@ -506,7 +506,7 @@ function AIPlanModal({
 
         {!result ? (
           <div className="space-y-4">
-            <p className="text-xs text-slate-400">{year}년 {month}월 콘텐츠를 AI가 자동으로 기획합니다</p>
+            <p className="text-xs text-slate-400">오늘({todayStr}) 이후 30일간 콘텐츠를 AI가 자동으로 기획합니다</p>
             <div>
               <label className="mb-1 block text-xs text-slate-400">업종 *</label>
               <input type="text" value={form.industry} onChange={(e) => setForm((p) => ({ ...p, industry: e.target.value }))}
@@ -520,7 +520,7 @@ function AIPlanModal({
                 className="w-full rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none" />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">월 콘텐츠 수</label>
+              <label className="mb-1 block text-xs text-slate-400">콘텐츠 수 (30일간)</label>
               <input type="number" value={form.contentCount} onChange={(e) => setForm((p) => ({ ...p, contentCount: Number(e.target.value) }))}
                 min={1} max={60}
                 className="w-32 rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white focus:outline-none" />
@@ -530,12 +530,15 @@ function AIPlanModal({
                 <span className="flex items-center justify-center gap-2">
                   <div className="chameleon-spinner !w-4 !h-4 !border-2" /> AI 기획 중...
                 </span>
-              ) : "이번 달 콘텐츠 자동 기획"}
+              ) : "향후 30일 콘텐츠 자동 기획"}
             </button>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-slate-400">{result.length}개 콘텐츠가 기획되었습니다</p>
+            <p className="text-sm text-slate-400">
+              {result.length}개 콘텐츠가 기획되었습니다
+              {planRange.start && <span className="text-slate-500"> ({planRange.start} ~ {planRange.end})</span>}
+            </p>
             <div className="max-h-[50vh] overflow-y-auto space-y-1.5">
               {result.map((item, i) => (
                 <div key={i} className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
