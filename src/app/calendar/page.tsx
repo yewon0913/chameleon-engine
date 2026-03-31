@@ -283,7 +283,14 @@ export default function CalendarPage() {
           year={year}
           month={month}
           onClose={() => setShowAI(false)}
-          onPlanned={() => { setShowAI(false); load(); }}
+          onPlanned={(newItems) => {
+            setShowAI(false);
+            if (newItems && newItems.length > 0) {
+              setItems((prev) => [...prev, ...newItems]);
+            } else {
+              load();
+            }
+          }}
         />
       )}
     </div>
@@ -418,24 +425,45 @@ function AIPlanModal({
   year: number;
   month: number;
   onClose: () => void;
-  onPlanned: () => void;
+  onPlanned: (newItems?: CalendarItem[]) => void;
 }) {
   const [form, setForm] = useState({ industry: "", target: "", contentCount: 20 });
   const [planning, setPlanning] = useState(false);
   const [result, setResult] = useState<{ date: string; title: string; contentType: string; channels: string[] }[] | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const monthStr = `${year}-${String(month).padStart(2, "0")}`;
+  const daysInMonth = new Date(year, month, 0).getDate();
+
   const handlePlan = async () => {
     if (!form.industry.trim()) return;
     setPlanning(true);
     try {
       const data = await trpc.calendar.aiPlan.mutate({
+        year,
+        month,
         industry: form.industry,
         target: form.target || "일반 소비자",
         contentCount: form.contentCount,
       });
       if (Array.isArray(data.plan)) {
-        setResult(data.plan);
+        // 날짜 유효성 검증 — 현재 월에 맞게 보정
+        const validated = data.plan.map((item: { date?: string; title?: string; contentType?: string; channels?: string[] }) => {
+          let dateStr = item.date || "";
+          // 날짜가 현재 월과 안 맞으면 보정
+          if (!dateStr.startsWith(monthStr)) {
+            const dayMatch = dateStr.match(/-(\d{2})$/);
+            const day = dayMatch ? Math.min(Number(dayMatch[1]), daysInMonth) : 1;
+            dateStr = `${monthStr}-${String(day).padStart(2, "0")}`;
+          }
+          return {
+            date: dateStr,
+            title: item.title || "콘텐츠",
+            contentType: item.contentType || "릴스",
+            channels: item.channels || [],
+          };
+        });
+        setResult(validated);
       } else {
         alert("AI 응답을 파싱할 수 없습니다. 다시 시도해주세요.");
       }
@@ -450,16 +478,16 @@ function AIPlanModal({
     if (!result) return;
     setSaving(true);
     try {
-      for (const item of result) {
-        const dateStr = item.date || `${year}-${String(month).padStart(2, "0")}-01`;
-        await trpc.calendar.create.mutate({
-          date: dateStr,
+      const created = await trpc.calendar.batchCreate.mutate({
+        items: result.map((item) => ({
+          date: item.date,
           title: item.title,
-          contentType: item.contentType || "릴스",
-          channels: item.channels || [],
-        });
-      }
-      onPlanned();
+          contentType: item.contentType,
+          channels: item.channels,
+        })),
+      });
+      // DB에서 반환된 데이터로 즉시 state 업데이트
+      onPlanned(created as unknown as CalendarItem[]);
     } catch {
       alert("저장 실패");
       setSaving(false);

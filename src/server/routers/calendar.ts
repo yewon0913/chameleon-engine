@@ -87,29 +87,42 @@ export const calendarRouter = router({
   aiPlan: publicProcedure
     .input(
       z.object({
+        year: z.number().int(),
+        month: z.number().int().min(1).max(12),
         industry: z.string().min(1),
         target: z.string().min(1),
         contentCount: z.number().int().min(1).max(60),
       })
     )
     .mutation(async ({ input }) => {
-      const prompt = `${input.industry} 업종의 소상공인을 위한 콘텐츠 캘린더를 기획해주세요.
+      const daysInMonth = new Date(input.year, input.month, 0).getDate();
+      const monthStr = `${input.year}-${String(input.month).padStart(2, "0")}`;
 
+      const prompt = `${input.industry} 업종의 소상공인을 위한 ${input.year}년 ${input.month}월 콘텐츠 캘린더를 기획해주세요.
+
+기간: ${monthStr}-01 ~ ${monthStr}-${String(daysInMonth).padStart(2, "0")}
 타겟: ${input.target}
 총 ${input.contentCount}개의 콘텐츠를 기획해주세요.
 
-요일별 콘텐츠 유형 추천:
-- 월요일: 정보형 콘텐츠
-- 화요일: 스토리형 콘텐츠
-- 수요일: 비교형 콘텐츠
-- 목요일: 후킹형 콘텐츠
-- 금요일: 이벤트형 콘텐츠
+중요 규칙:
+- 모든 date는 반드시 "${monthStr}-DD" 형식 (DD는 01~${String(daysInMonth).padStart(2, "0")})
+- 주말 포함 골고루 배치
+- contentType: "릴스", "블로그", "카드뉴스", "스레드", "인스타", "틱톡", "유튜브" 중 택1
+- channels: ["인스타", "틱톡", "유튜브", "스레드", "블로그"] 중 복수 선택
 
-반드시 아래 JSON 배열 형식으로만 응답해주세요:
-[{"date": "YYYY-MM-DD", "title": "콘텐츠 제목", "contentType": "릴스|블로그|카드뉴스|스레드", "channels": ["인스타", "블로그", "틱톡"]}]`;
+요일별 콘텐츠 유형 추천:
+- 월요일: 정보형 콘텐츠 (블로그, 카드뉴스)
+- 화요일: 스토리형 콘텐츠 (릴스, 스레드)
+- 수요일: 비교형 콘텐츠 (카드뉴스)
+- 목요일: 후킹형 콘텐츠 (릴스, 틱톡)
+- 금요일: 이벤트/프로모션 콘텐츠
+- 토/일: 감성/브이로그형
+
+반드시 아래 JSON 배열 형식으로만 응답해주세요 (다른 텍스트 없이):
+[{"date": "${monthStr}-01", "title": "콘텐츠 제목", "contentType": "릴스", "channels": ["인스타", "틱톡"]}]`;
 
       const content = await chatWithClaude(
-        "당신은 소상공인 마케팅 콘텐츠 기획 전문가입니다.",
+        "당신은 소상공인 마케팅 콘텐츠 기획 전문가입니다. 반드시 유효한 JSON 배열로만 응답하세요.",
         [{ role: "user", content: prompt }],
       );
 
@@ -120,5 +133,34 @@ export const calendarRouter = router({
       } catch {
         return { plan: content };
       }
+    }),
+
+  // 일괄 생성
+  batchCreate: publicProcedure
+    .input(
+      z.object({
+        items: z.array(
+          z.object({
+            date: z.string(),
+            title: z.string().min(1),
+            contentType: z.string(),
+            status: z.string().optional(),
+            channels: z.array(z.string()).optional(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      if (input.items.length === 0) return [];
+      const created = await db
+        .insert(chameleonCalendar)
+        .values(
+          input.items.map((item) => ({
+            ...item,
+            status: item.status || "기획",
+          }))
+        )
+        .returning();
+      return created;
     }),
 });
