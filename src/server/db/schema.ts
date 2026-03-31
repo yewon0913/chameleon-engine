@@ -130,3 +130,53 @@ export const chameleonPortfolio = pgTable("chameleon_portfolio", {
   slug: text("slug").unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const chameleonTemplates = pgTable("chameleon_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  category: text("category").notNull(),
+  question: text("question").notNull(),
+  answerOptions: text("answer_options").array().default([]),
+  businessType: text("business_type"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonAutopilot = pgTable("chameleon_autopilot", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  date: date("date").notNull(),
+  briefingItems: jsonb("briefing_items").default([]),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonFunnel = pgTable("chameleon_funnel", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  prospectId: uuid("prospect_id").references(() => chameleonProspects.id, { onDelete: "cascade" }),
+  step: integer("step").notNull().default(1),
+  messageContent: text("message_content"),
+  status: text("status").notNull().default("대기"),
+  scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonAbTests = pgTable("chameleon_ab_tests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  contentId: uuid("content_id").references(() => chameleonCalendar.id, { onDelete: "set null" }),
+  versionA: text("version_a").notNull(),
+  versionB: text("version_b").notNull(),
+  versionC: text("version_c"),
+  metricsA: jsonb("metrics_a").default({}),
+  metricsB: jsonb("metrics_b").default({}),
+  metricsC: jsonb("metrics_c").default({}),
+  winner: text("winner"),
+  analysis: text("analysis"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonSeasons = pgTable("chameleon_seasons", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  eventName: text("event_name").notNull(),
+  eventDate: date("event_date").notNull(),
+  reminderDate: date("reminder_date"),
+  templateSuggestions: jsonb("template_suggestions").default([]),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

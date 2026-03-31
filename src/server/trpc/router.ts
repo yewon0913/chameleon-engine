@@ -9,6 +9,13 @@ import { outboundRouter } from "../routers/outbound";
 import { portfolioRouter } from "../routers/portfolio";
 import { analyticsRouter } from "../routers/analytics";
 import { reportRouter } from "../routers/report";
+import { osmuRouter } from "../routers/osmu";
+import { hashtagRouter } from "../routers/hashtag";
+import { simulatorRouter } from "../routers/simulator";
+import { templatesRouter } from "../routers/templates";
+import { autopilotRouter } from "../routers/autopilot";
+import { funnelRouter } from "../routers/funnel";
+import { abtestRouter } from "../routers/abtest";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -24,6 +31,13 @@ export const appRouter = router({
   portfolio: portfolioRouter,
   analytics: analyticsRouter,
   report: reportRouter,
+  osmu: osmuRouter,
+  hashtag: hashtagRouter,
+  simulator: simulatorRouter,
+  templates: templatesRouter,
+  autopilot: autopilotRouter,
+  funnel: funnelRouter,
+  abtest: abtestRouter,
 });
 
 export type AppRouter = typeof appRouter;

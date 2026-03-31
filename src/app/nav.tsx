@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -12,18 +13,36 @@ import {
   FileText,
   Briefcase,
   BarChart3,
+  Layers,
+  Hash,
+  Calculator,
+  MessageSquare,
+  Bot,
+  GitBranch,
+  FlaskConical,
+  ChevronDown,
 } from "lucide-react";
 
-const NAV_ITEMS = [
+const MAIN_NAV = [
   { href: "/content", label: "콘텐츠", icon: Film },
+  { href: "/osmu", label: "OSMU", icon: Layers },
   { href: "/calendar", label: "캘린더", icon: CalendarDays },
   { href: "/deploy", label: "배포", icon: Send },
   { href: "/crm", label: "CRM", icon: Users },
+];
+
+const MORE_NAV = [
   { href: "/outbound", label: "영업", icon: Target },
   { href: "/analytics", label: "분석", icon: BarChart2 },
   { href: "/report", label: "리포트", icon: FileText },
   { href: "/portfolio", label: "포트폴리오", icon: Briefcase },
   { href: "/revenue", label: "수익", icon: BarChart3 },
+  { href: "/hashtag", label: "해시태그", icon: Hash },
+  { href: "/simulator", label: "시뮬레이터", icon: Calculator },
+  { href: "/templates", label: "템플릿", icon: MessageSquare },
+  { href: "/autopilot", label: "AI매니저", icon: Bot },
+  { href: "/funnel", label: "퍼널", icon: GitBranch },
+  { href: "/ab-test", label: "AB테스트", icon: FlaskConical },
 ];
 
 function ChameleonLogo() {
@@ -78,6 +97,9 @@ function ChameleonLogo() {
 
 export function NavBar() {
   const pathname = usePathname();
+  const [showMore, setShowMore] = useState(false);
+
+  const isMoreActive = MORE_NAV.some((item) => pathname.startsWith(item.href));
 
   return (
     <nav className="sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
@@ -85,40 +107,58 @@ export function NavBar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <ChameleonLogo />
-          <span className="chameleon-text text-lg font-extrabold tracking-tight">
+          <span className="chameleon-text text-lg font-extrabold tracking-tight hidden sm:inline">
             CHAMELEON
           </span>
         </Link>
 
         {/* Nav Items */}
-        <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none">
-          {NAV_ITEMS.map((item) => {
+        <div className="flex items-center gap-0.5">
+          {MAIN_NAV.map((item) => {
             const active = pathname.startsWith(item.href);
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="relative flex items-center gap-1 shrink-0 rounded-lg px-2 py-1.5 text-xs font-medium transition-all group"
-              >
+              <Link key={item.href} href={item.href}
+                className="relative flex items-center gap-1 shrink-0 rounded-lg px-2 py-1.5 text-xs font-medium transition-all group">
                 <span className={active ? "chameleon-icon" : "text-slate-500 group-hover:chameleon-icon"}>
                   <item.icon size={14} />
                 </span>
-                <span className={`hidden sm:inline ${
-                  active
-                    ? "chameleon-text"
-                    : "text-slate-500 group-hover:text-white"
-                }`}>
+                <span className={`hidden md:inline ${active ? "chameleon-text" : "text-slate-500 group-hover:text-white"}`}>
                   {item.label}
                 </span>
-                {active && (
-                  <span className="absolute bottom-0 left-2 right-2 chameleon-underline rounded-full" />
-                )}
+                {active && <span className="absolute bottom-0 left-2 right-2 chameleon-underline rounded-full" />}
               </Link>
             );
           })}
+
+          {/* More Dropdown */}
+          <div className="relative">
+            <button onClick={() => setShowMore(!showMore)}
+              className={`relative flex items-center gap-1 shrink-0 rounded-lg px-2 py-1.5 text-xs font-medium transition-all ${isMoreActive ? "chameleon-text" : "text-slate-500 hover:text-white"}`}>
+              <ChevronDown size={14} />
+              <span className="hidden md:inline">더보기</span>
+              {isMoreActive && <span className="absolute bottom-0 left-2 right-2 chameleon-underline rounded-full" />}
+            </button>
+
+            {showMore && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowMore(false)} />
+                <div className="absolute right-0 top-full mt-2 z-20 w-56 rounded-xl border border-white/10 bg-[#0d0d0d] shadow-2xl p-2 grid grid-cols-2 gap-1">
+                  {MORE_NAV.map((item) => {
+                    const active = pathname.startsWith(item.href);
+                    return (
+                      <Link key={item.href} href={item.href} onClick={() => setShowMore(false)}
+                        className={`flex items-center gap-1.5 rounded-lg px-2 py-2 text-xs font-medium transition-all ${active ? "chameleon-bg-subtle chameleon-text" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}>
+                        <item.icon size={12} />
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
-      {/* Nav bottom border */}
       <div className="chameleon-underline opacity-30" />
     </nav>
   );
