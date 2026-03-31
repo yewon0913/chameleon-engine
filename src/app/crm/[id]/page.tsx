@@ -10,6 +10,7 @@ import {
   FileText,
   Download,
   MessageSquare,
+  Sparkles,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -83,6 +84,9 @@ export default function ClientDetailPage() {
   const [noteAction, setNoteAction] = useState("");
   const [addingNote, setAddingNote] = useState(false);
   const [showQuote, setShowQuote] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [insight, setInsight] = useState<any>(null);
+  const [analyzingInsight, setAnalyzingInsight] = useState(false);
 
   const load = async () => {
     try {
@@ -117,6 +121,18 @@ export default function ClientDetailPage() {
     setNoteAction("");
     setAddingNote(false);
     load();
+  };
+
+  const analyzeInsight = async () => {
+    if (!client) return;
+    setAnalyzingInsight(true);
+    try {
+      const result = await trpc.crm.analyzeBusiness.mutate({
+        businessName: client.businessName || client.name,
+      });
+      if (!result.error) setInsight(result);
+    } catch { /* ignore */ }
+    setAnalyzingInsight(false);
   };
 
   const deleteProject = async (projectId: string) => {
@@ -219,6 +235,66 @@ export default function ClientDetailPage() {
               <InfoRow label="유튜브" value={client.snsYoutube} />
               <InfoRow label="블로그" value={client.snsBlog} />
             </div>
+          </div>
+
+          {/* AI 고객 인사이트 */}
+          <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-purple-300 flex items-center gap-2">
+                <Sparkles size={14} /> 고객 인사이트
+              </h3>
+              <button
+                onClick={analyzeInsight}
+                disabled={analyzingInsight}
+                className="flex items-center gap-1 rounded-lg bg-purple-600/30 px-3 py-1.5 text-xs font-medium text-purple-200 hover:bg-purple-600/50 transition-colors disabled:opacity-40"
+              >
+                {analyzingInsight ? <div className="chameleon-spinner !w-3 !h-3 !border-2" /> : <Sparkles size={12} />}
+                {insight ? "다시 분석" : "AI 분석"}
+              </button>
+            </div>
+            {insight ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-xs text-slate-500">추정 업종</p>
+                    <p className="text-white">{insight.businessType}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">주요 타겟</p>
+                    <p className="text-white">{insight.target}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">예상 월 예산</p>
+                    <p className="text-white">{insight.estimatedBudget}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">경쟁 강도</p>
+                    <p className="text-white">{insight.competitionLevel}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">추천 콘텐츠 주제</p>
+                  <div className="flex flex-wrap gap-1">
+                    {insight.reelsTopics?.map((t: string, i: number) => (
+                      <span key={i} className="rounded-full bg-purple-500/20 px-2.5 py-0.5 text-xs text-purple-300">{t}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">마케팅 전략</p>
+                  <p className="text-xs text-slate-300">{insight.marketingNeeds}</p>
+                </div>
+                <div className="rounded-lg bg-black/30 p-3">
+                  <p className="text-xs text-slate-500 mb-1">영업 접근 코칭</p>
+                  <p className="text-xs text-slate-300 leading-relaxed">{insight.approachTip}</p>
+                </div>
+                <p className="text-[10px] text-slate-600">추천 패키지: {insight.recommendedPackage} · 추정 서비스: {insight.services}</p>
+              </div>
+            ) : (
+              <p className="py-4 text-center text-sm text-slate-500">
+                AI 분석 버튼을 눌러 고객 인사이트를 확인하세요
+              </p>
+            )}
           </div>
 
           {/* Projects */}

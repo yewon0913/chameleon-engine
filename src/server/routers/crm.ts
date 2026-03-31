@@ -3,6 +3,7 @@ import { router, publicProcedure } from "../trpc/init";
 import { db } from "../db/client";
 import { chameleonClients, chameleonProjects, chameleonNotes, chameleonIntake } from "../db/schema";
 import { eq, desc } from "drizzle-orm";
+import { chatWithClaude } from "@/lib/claude-api";
 
 const CLIENT_STATUSES = [
   "문의", "상담중", "견적발송", "계약완료", "제작중", "납품완료", "사후관리",
@@ -201,6 +202,44 @@ export const crmRouter = router({
         .set({ updatedAt: new Date() })
         .where(eq(chameleonClients.id, input.clientId));
       return note;
+    }),
+
+  // 상호명 AI 분석
+  analyzeBusiness: publicProcedure
+    .input(
+      z.object({
+        businessName: z.string().min(1),
+        region: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const prompt = `"${input.businessName}"${input.region ? ` (${input.region} 소재)` : ""} 이라는 상호명을 분석해주세요.
+
+반드시 아래 JSON 형식으로만 응답하세요 (다른 텍스트 없이):
+{
+  "businessType": "추정 업종 (카페/음식점/뷰티샵/쇼핑몰/학원/병원/헬스장/펜션/기타 중 택1)",
+  "services": "추정 주요 메뉴/서비스 (쉼표로 구분, 3~5개)",
+  "target": "추정 주요 타겟 고객층",
+  "marketingNeeds": "이 업종에 가장 필요한 마케팅 전략 1줄",
+  "reelsTopics": ["릴스/숏폼 주제 추천 1", "릴스/숏폼 주제 추천 2", "릴스/숏폼 주제 추천 3"],
+  "recommendedPackage": "추천 마케팅 패키지명 (SNS운영대행/릴스패키지/블로그패키지/통합패키지 중 택1)",
+  "estimatedBudget": "추정 월 마케팅 예산 범위 (예: 50~100만원)",
+  "competitionLevel": "경쟁 강도 (상/중/하)",
+  "approachTip": "이 업체에 영업 제안할 때 핵심 접근 포인트 2~3문장"
+}`;
+
+      const content = await chatWithClaude(
+        "당신은 소상공인 마케팅 분석 전문가입니다. 상호명만으로 업종, 서비스, 타겟을 정확히 추정합니다. 반드시 유효한 JSON으로만 응답하세요.",
+        [{ role: "user", content: prompt }],
+      );
+
+      try {
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+        return parsed;
+      } catch {
+        return { error: "분석 실패", raw: content };
+      }
     }),
 
   // 설문 제출 (intake)

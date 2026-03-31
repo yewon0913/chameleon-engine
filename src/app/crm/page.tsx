@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ArrowLeft,
   X,
+  Sparkles,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -279,6 +280,26 @@ function AddClientModal({
     monthlyBudget: "",
   });
   const [saving, setSaving] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [aiInsight, setAiInsight] = useState<any>(null);
+
+  const handleAnalyze = async () => {
+    if (!form.businessName.trim()) return;
+    setAnalyzing(true);
+    try {
+      const result = await trpc.crm.analyzeBusiness.mutate({ businessName: form.businessName });
+      if (!result.error) {
+        setAiInsight(result);
+        setForm((prev) => ({
+          ...prev,
+          businessType: result.businessType || prev.businessType,
+          marketingGoal: result.marketingNeeds || prev.marketingGoal,
+        }));
+      }
+    } catch { /* ignore */ }
+    setAnalyzing(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -312,8 +333,48 @@ function AddClientModal({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Input label="업종" value={form.businessType} onChange={(v) => set("businessType", v)} />
-            <Input label="사업장명" value={form.businessName} onChange={(v) => set("businessName", v)} />
+            <div>
+              <label className="mb-1 block text-xs text-slate-400">사업장명</label>
+              <div className="flex gap-1.5">
+                <input
+                  type="text"
+                  value={form.businessName}
+                  onChange={(e) => set("businessName", e.target.value)}
+                  className="flex-1 rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleAnalyze}
+                  disabled={analyzing || !form.businessName.trim()}
+                  className="shrink-0 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-2.5 py-2 text-xs font-bold text-white disabled:opacity-40 transition-opacity flex items-center gap-1"
+                >
+                  {analyzing ? <div className="chameleon-spinner !w-3 !h-3 !border-2" /> : <Sparkles size={12} />}
+                  AI
+                </button>
+              </div>
+            </div>
           </div>
+
+          {/* AI 분석 결과 카드 */}
+          {aiInsight && !aiInsight.error && (
+            <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4 space-y-2">
+              <p className="text-xs font-bold text-purple-300 flex items-center gap-1"><Sparkles size={12} /> AI 분석 결과</p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div><span className="text-slate-500">추정 업종:</span> <span className="text-white">{aiInsight.businessType}</span></div>
+                <div><span className="text-slate-500">추정 서비스:</span> <span className="text-white">{aiInsight.services}</span></div>
+                <div><span className="text-slate-500">타겟:</span> <span className="text-white">{aiInsight.target}</span></div>
+                <div><span className="text-slate-500">경쟁 강도:</span> <span className="text-white">{aiInsight.competitionLevel}</span></div>
+              </div>
+              {aiInsight.reelsTopics && (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {aiInsight.reelsTopics.map((t: string, i: number) => (
+                    <span key={i} className="rounded-full bg-purple-500/20 px-2 py-0.5 text-[10px] text-purple-300">{t}</span>
+                  ))}
+                </div>
+              )}
+              <p className="text-[10px] text-slate-500">추천 패키지: {aiInsight.recommendedPackage} · 예상 예산: {aiInsight.estimatedBudget}</p>
+            </div>
+          )}
           <p className="text-xs font-medium text-slate-400 pt-2">SNS 채널</p>
           <div className="grid grid-cols-2 gap-3">
             <Input label="인스타그램" value={form.snsInstagram} onChange={(v) => set("snsInstagram", v)} placeholder="@계정 또는 팔로워수" />

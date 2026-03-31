@@ -193,8 +193,30 @@ function AddProspectModal({ onClose, onCreated }: { onClose: () => void; onCreat
     lastPostDate: "",
   });
   const [saving, setSaving] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [aiInsight, setAiInsight] = useState<any>(null);
 
   const set = (key: string, value: string) => setForm((p) => ({ ...p, [key]: value }));
+
+  const handleAnalyze = async () => {
+    if (!form.businessName.trim()) return;
+    setAnalyzing(true);
+    try {
+      const result = await trpc.crm.analyzeBusiness.mutate({
+        businessName: form.businessName,
+        region: form.region || undefined,
+      });
+      if (!result.error) {
+        setAiInsight(result);
+        setForm((p) => ({
+          ...p,
+          businessType: result.businessType || p.businessType,
+        }));
+      }
+    } catch { /* ignore */ }
+    setAnalyzing(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,7 +240,7 @@ function AddProspectModal({ onClose, onCreated }: { onClose: () => void; onCreat
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-[#D4AF37]/20 bg-[#0d0d0d] p-6">
+      <div className="w-full max-w-lg rounded-2xl border border-[#D4AF37]/20 bg-[#0d0d0d] p-6 max-h-[90vh] overflow-y-auto">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">잠재 고객 추가</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-white"><X size={20} /></button>
@@ -227,9 +249,20 @@ function AddProspectModal({ onClose, onCreated }: { onClose: () => void; onCreat
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="mb-1 block text-xs text-slate-400">상호 *</label>
-              <input type="text" value={form.businessName} onChange={(e) => set("businessName", e.target.value)}
-                placeholder="사업장 이름"
-                className="w-full rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none" />
+              <div className="flex gap-1.5">
+                <input type="text" value={form.businessName} onChange={(e) => set("businessName", e.target.value)}
+                  placeholder="사업장 이름"
+                  className="flex-1 rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none" />
+                <button
+                  type="button"
+                  onClick={handleAnalyze}
+                  disabled={analyzing || !form.businessName.trim()}
+                  className="shrink-0 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-2.5 py-2 text-xs font-bold text-white disabled:opacity-40 transition-opacity flex items-center gap-1"
+                >
+                  {analyzing ? <div className="chameleon-spinner !w-3 !h-3 !border-2" /> : <Sparkles size={12} />}
+                  AI
+                </button>
+              </div>
             </div>
             <div>
               <label className="mb-1 block text-xs text-slate-400">업종</label>
@@ -240,6 +273,28 @@ function AddProspectModal({ onClose, onCreated }: { onClose: () => void; onCreat
               </select>
             </div>
           </div>
+
+          {/* AI 분석 결과 카드 */}
+          {aiInsight && !aiInsight.error && (
+            <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-3 space-y-2">
+              <p className="text-xs font-bold text-purple-300 flex items-center gap-1"><Sparkles size={12} /> AI 분석 결과</p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div><span className="text-slate-500">타겟:</span> <span className="text-white">{aiInsight.target}</span></div>
+                <div><span className="text-slate-500">경쟁:</span> <span className="text-white">{aiInsight.competitionLevel}</span></div>
+              </div>
+              {aiInsight.reelsTopics && (
+                <div className="flex flex-wrap gap-1">
+                  {aiInsight.reelsTopics.map((t: string, i: number) => (
+                    <span key={i} className="rounded-full bg-purple-500/20 px-2 py-0.5 text-[10px] text-purple-300">{t}</span>
+                  ))}
+                </div>
+              )}
+              <div className="rounded-lg bg-black/30 p-2">
+                <p className="text-[10px] text-slate-500 mb-0.5">영업 접근 코칭</p>
+                <p className="text-[11px] text-slate-300 leading-relaxed">{aiInsight.approachTip}</p>
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="mb-1 block text-xs text-slate-400">지역</label>
@@ -277,6 +332,9 @@ function MessageModal({ prospect, onClose }: { prospect: Prospect; onClose: () =
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [coaching, setCoaching] = useState<any>(null);
+  const [analyzingCoach, setAnalyzingCoach] = useState(false);
 
   const generate = async () => {
     setLoading(true);
@@ -292,6 +350,17 @@ function MessageModal({ prospect, onClose }: { prospect: Prospect; onClose: () =
     } finally {
       setLoading(false);
     }
+  };
+
+  const analyzeCoaching = async () => {
+    setAnalyzingCoach(true);
+    try {
+      const result = await trpc.crm.analyzeBusiness.mutate({
+        businessName: prospect.businessName,
+      });
+      if (!result.error) setCoaching(result);
+    } catch { /* ignore */ }
+    setAnalyzingCoach(false);
   };
 
   const handleCopy = () => {
@@ -320,6 +389,11 @@ function MessageModal({ prospect, onClose }: { prospect: Prospect; onClose: () =
                 <><Sparkles size={14} /> 메시지 자동 생성</>
               )}
             </button>
+            {/* AI 접근 코칭 */}
+            <button onClick={analyzeCoaching} disabled={analyzingCoach} className="btn-ghost w-full py-2 text-xs text-slate-400 flex items-center justify-center gap-1">
+              {analyzingCoach ? <div className="chameleon-spinner !w-3 !h-3 !border-2" /> : <Sparkles size={12} />}
+              이 가게 접근 코칭 보기
+            </button>
           </div>
         ) : (
           <div className="space-y-4">
@@ -330,6 +404,12 @@ function MessageModal({ prospect, onClose }: { prospect: Prospect; onClose: () =
                 {copied ? <Check size={14} /> : <Copy size={14} />}
               </button>
             </div>
+            {!coaching && (
+              <button onClick={analyzeCoaching} disabled={analyzingCoach} className="btn-ghost w-full py-1.5 text-xs text-slate-400 flex items-center justify-center gap-1">
+                {analyzingCoach ? <div className="chameleon-spinner !w-3 !h-3 !border-2" /> : <Sparkles size={12} />}
+                접근 코칭 보기
+              </button>
+            )}
             <div className="flex gap-2">
               <button onClick={generate} disabled={loading} className="btn-ghost flex-1 py-2 text-sm text-slate-300">
                 다시 생성
@@ -337,6 +417,20 @@ function MessageModal({ prospect, onClose }: { prospect: Prospect; onClose: () =
               <button onClick={onClose} className="btn-accent flex-1 py-2 text-sm font-semibold">
                 완료
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* AI 접근 코칭 결과 */}
+        {coaching && (
+          <div className="mt-4 rounded-xl border border-purple-500/30 bg-purple-500/5 p-4 space-y-2">
+            <p className="text-xs font-bold text-purple-300 flex items-center gap-1"><Sparkles size={12} /> 접근 코칭</p>
+            <p className="text-xs text-slate-300 leading-relaxed">{coaching.approachTip}</p>
+            <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+              <div><span className="text-slate-500">추정 업종:</span> <span className="text-white">{coaching.businessType}</span></div>
+              <div><span className="text-slate-500">타겟:</span> <span className="text-white">{coaching.target}</span></div>
+              <div><span className="text-slate-500">경쟁:</span> <span className="text-white">{coaching.competitionLevel}</span></div>
+              <div><span className="text-slate-500">추천:</span> <span className="text-white">{coaching.recommendedPackage}</span></div>
             </div>
           </div>
         )}
