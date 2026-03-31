@@ -92,7 +92,8 @@ export default function ChameleonContentPage() {
   const [tab, setTab] = useState<TabKey>("reels");
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [copiedKey, setCopiedKey] = useState("");
+  const [toast, setToast] = useState("");
 
   // 릴스
   const [reelsIndustry, setReelsIndustry] = useState("");
@@ -127,7 +128,8 @@ export default function ChameleonContentPage() {
   async function handleGenerate() {
     setGenerating(true);
     setResult("");
-    setCopied(false);
+    setCopiedKey("");
+    setToast("");
     try {
       let res: { content: string };
       if (tab === "reels") {
@@ -183,10 +185,11 @@ export default function ChameleonContentPage() {
     return false;
   }
 
-  async function handleCopy() {
-    await navigator.clipboard.writeText(result);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  function copyToClipboard(text: string, key: string, label: string) {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setToast(`${label} 복사 완료!`);
+    setTimeout(() => { setCopiedKey(""); setToast(""); }, 2000);
   }
 
   function handleDownload() {
@@ -197,6 +200,59 @@ export default function ChameleonContentPage() {
     a.download = `chameleon-${tab}-${Date.now()}.md`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  interface CopyBtn { key: string; label: string; text: string }
+  interface ParsedSection { key: string; heading: string; body: string; buttons: CopyBtn[] }
+
+  function parseSections(md: string): ParsedSection[] {
+    const parts = md.split(/(?=^### )/m).filter((s) => s.trim());
+    if (parts.length === 0) {
+      return [{ key: "s-0", heading: "결과", body: md, buttons: [{ key: "s-0", label: "복사", text: md }] }];
+    }
+    const sections: ParsedSection[] = [];
+    parts.forEach((part, i) => {
+      const trimmed = part.trim();
+      const headMatch = trimmed.match(/^###\s+(.+)/);
+      if (!headMatch) {
+        sections.push({ key: `pre-${i}`, heading: "개요", body: trimmed, buttons: [{ key: `pre-${i}`, label: "복사", text: trimmed }] });
+        return;
+      }
+      const heading = headMatch[1];
+      const body = trimmed.slice(headMatch[0].length).trim();
+      const buttons: CopyBtn[] = [];
+
+      if (/🎬/.test(heading)) {
+        buttons.push({ key: `video-${i}`, label: "영상 프롬프트 복사", text: body });
+      } else if (/🖼/.test(heading)) {
+        buttons.push({ key: `image-${i}`, label: "이미지 프롬프트 복사", text: body });
+      } else if (/📝/.test(heading) && /캡션/.test(heading)) {
+        const captionParts = body.split(/(?=\d+\.\s*\*\*)/);
+        for (const cp of captionParts) {
+          const line1 = cp.trim().split("\n")[0];
+          if (/인스타그램/i.test(line1)) buttons.push({ key: `insta-${i}`, label: "인스타 복사", text: cp.trim() });
+          else if (/틱톡/i.test(line1)) buttons.push({ key: `tiktok-${i}`, label: "틱톡 복사", text: cp.trim() });
+          else if (/유튜브/i.test(line1)) buttons.push({ key: `youtube-${i}`, label: "유튜브 복사", text: cp.trim() });
+        }
+      } else if (/해시태그/.test(heading)) {
+        const hashParts = body.split(/(?=^[-•*]\s*(?:인스타그램|틱톡|유튜브))/m);
+        for (const hp of hashParts) {
+          const hpTrimmed = hp.trim();
+          if (/^[-•*]\s*인스타그램/i.test(hpTrimmed)) buttons.push({ key: `hash-insta-${i}`, label: "인스타 해시태그 복사", text: hpTrimmed });
+          else if (/^[-•*]\s*틱톡/i.test(hpTrimmed)) buttons.push({ key: `hash-tiktok-${i}`, label: "틱톡 해시태그 복사", text: hpTrimmed });
+        }
+      } else if (/⏰/.test(heading) || /타이밍/.test(heading)) {
+        buttons.push({ key: `timing-${i}`, label: "타이밍 복사", text: body });
+      }
+
+      if (buttons.length === 0) {
+        const short = heading.replace(/[^\w가-힣\s]/g, "").trim().slice(0, 10);
+        buttons.push({ key: `s-${i}`, label: `${short} 복사`, text: body });
+      }
+
+      sections.push({ key: `s-${i}`, heading, body, buttons });
+    });
+    return sections;
   }
 
   return (
@@ -225,7 +281,7 @@ export default function ChameleonContentPage() {
         {TABS.map((t) => (
           <button
             key={t.key}
-            onClick={() => { setTab(t.key); setResult(""); setCopied(false); }}
+            onClick={() => { setTab(t.key); setResult(""); setCopiedKey(""); setToast(""); }}
             className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition-all ${
               tab === t.key
                 ? "chameleon-gradient text-white shadow-lg"
@@ -297,37 +353,73 @@ export default function ChameleonContentPage() {
 
       {/* Result */}
       {(result || generating) && (
-        <div className="card-luxury shadow-xl overflow-hidden">
+        <div className="space-y-3">
           {generating ? (
-            <div className="flex flex-col items-center py-16 gap-3">
-              <div className="chameleon-spinner" />
-              <p className="text-sm font-medium text-white">AI가 콘텐츠를 제작 중입니다...</p>
-              <p className="text-[10px] text-slate-500">30초~1분 정도 소요됩니다</p>
+            <div className="card-luxury shadow-xl">
+              <div className="flex flex-col items-center py-16 gap-3">
+                <div className="chameleon-spinner" />
+                <p className="text-sm font-medium text-white">AI가 콘텐츠를 제작 중입니다...</p>
+                <p className="text-[10px] text-slate-500">30초~1분 정도 소요됩니다</p>
+              </div>
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+              {/* Top toolbar */}
+              <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold chameleon-text">생성 결과</h3>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-1.5 rounded-lg chameleon-bg px-3 py-1.5 text-xs text-[#0a0a0a] font-semibold hover:shadow-lg transition-colors"
+                    onClick={() => copyToClipboard(result, "full", "전체")}
+                    className="flex items-center gap-1.5 rounded-lg chameleon-bg px-3 py-1.5 text-xs text-[#0a0a0a] font-semibold hover:shadow-lg transition-all"
                   >
-                    {copied ? <><Check size={12} className="text-emerald-400" /> 복사됨</> : <><Copy size={12} /> 복사</>}
+                    {copiedKey === "full" ? <><Check size={12} /> 복사됨</> : <><Copy size={12} /> 전체 복사</>}
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="flex items-center gap-1.5 rounded-lg chameleon-bg px-3 py-1.5 text-xs text-[#0a0a0a] font-semibold hover:shadow-lg transition-colors"
+                    className="flex items-center gap-1.5 rounded-lg chameleon-bg px-3 py-1.5 text-xs text-[#0a0a0a] font-semibold hover:shadow-lg transition-all"
                   >
                     <Download size={12} /> 다운로드
                   </button>
                 </div>
               </div>
-              <div className="px-6 py-5 max-h-[700px] overflow-y-auto chameleon-bg-subtle rounded-b-2xl prose prose-invert prose-sm max-w-none prose-headings:text-white prose-headings:font-bold prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-h3:text-sm prose-h3:mt-4 prose-h3:mb-1 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-[#F5D061] prose-code:text-[#F5D061] prose-code:bg-[#F5D061]/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-hr:my-4 prose-hr:border-white/10">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
-              </div>
+
+              {/* Section cards */}
+              {parseSections(result).map((section) => (
+                <div key={section.key} className="card-luxury shadow-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
+                    <h4 className="text-xs font-bold text-white">{section.heading}</h4>
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      {section.buttons.map((btn) => (
+                        <button
+                          key={btn.key}
+                          onClick={() => copyToClipboard(btn.text, btn.key, btn.label)}
+                          className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-medium transition-all ${
+                            copiedKey === btn.key
+                              ? "chameleon-bg text-[#0a0a0a]"
+                              : "chameleon-border-slow bg-black/40 text-slate-400 hover:chameleon-bg hover:text-[#0a0a0a]"
+                          }`}
+                        >
+                          {copiedKey === btn.key ? <><Check size={10} /> 복사 완료!</> : <><Copy size={10} /> {btn.label}</>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="px-5 py-4 prose prose-invert prose-sm max-w-none prose-headings:text-white prose-headings:font-bold prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-h3:text-sm prose-h3:mt-4 prose-h3:mb-1 prose-h4:text-xs prose-h4:mt-3 prose-h4:mb-1 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-[#F5D061] prose-code:text-[#F5D061] prose-code:bg-[#F5D061]/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-hr:my-4 prose-hr:border-white/10">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.body}</ReactMarkdown>
+                  </div>
+                </div>
+              ))}
             </>
           )}
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl chameleon-bg px-5 py-2.5 text-sm font-bold text-[#0a0a0a] shadow-2xl"
+          style={{ animation: "toast-in 0.3s ease-out" }}>
+          <style>{`@keyframes toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+          {toast}
         </div>
       )}
     </div>
