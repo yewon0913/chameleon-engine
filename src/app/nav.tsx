@@ -21,9 +21,11 @@ import {
   GitBranch,
   FlaskConical,
   ChevronDown,
+  Route,
 } from "lucide-react";
 
 const MAIN_NAV = [
+  { href: "/workflow", label: "워크플로우", icon: Route },
   { href: "/content", label: "콘텐츠", icon: Film },
   { href: "/osmu", label: "OSMU", icon: Layers },
   { href: "/calendar", label: "캘린더", icon: CalendarDays },

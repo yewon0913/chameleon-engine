@@ -19,9 +19,11 @@ import {
   Bot,
   GitBranch,
   FlaskConical,
+  Route,
 } from "lucide-react";
 
 const MODULES = [
+  { href: "/workflow", icon: Route, label: "작업 흐름 가이드", desc: "기획→생성→배포→고객관리 워크플로우", ready: true },
   { href: "/content", icon: Film, label: "콘텐츠 공장", desc: "릴스, 블로그, 카드뉴스, 상세페이지 원클릭 제작", ready: true },
   { href: "/osmu", icon: Layers, label: "OSMU 재활용", desc: "1개 입력 → 5채널 콘텐츠 자동 변환", ready: true },
   { href: "/calendar", icon: CalendarDays, label: "콘텐츠 캘린더", desc: "월간 캘린더, AI 자동 기획, 시즌 이벤트", ready: true },
@@ -53,7 +55,7 @@ export default function ChameleonDashboard() {
           AI 수익화 플랫폼
         </p>
         <p className="mt-1 text-sm text-slate-500">
-          소상공인 마케팅의 모든 것 — 17개 모듈 통합 플랫폼
+          소상공인 마케팅의 모든 것 — 18개 모듈 통합 플랫폼
         </p>
       </div>
 
