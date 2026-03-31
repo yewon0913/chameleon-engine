@@ -2,13 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Film, Users, ClipboardList, BarChart3 } from "lucide-react";
+import {
+  Film,
+  Users,
+  CalendarDays,
+  Send,
+  Target,
+  BarChart2,
+  FileText,
+  Briefcase,
+  BarChart3,
+} from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/content", label: "콘텐츠", icon: Film },
+  { href: "/calendar", label: "캘린더", icon: CalendarDays },
+  { href: "/deploy", label: "배포", icon: Send },
   { href: "/crm", label: "CRM", icon: Users },
+  { href: "/outbound", label: "영업", icon: Target },
+  { href: "/analytics", label: "분석", icon: BarChart2 },
+  { href: "/report", label: "리포트", icon: FileText },
+  { href: "/portfolio", label: "포트폴리오", icon: Briefcase },
   { href: "/revenue", label: "수익", icon: BarChart3 },
-  { href: "/intake", label: "설문", icon: ClipboardList },
 ];
 
 function ChameleonLogo() {
@@ -76,14 +91,14 @@ export function NavBar() {
         </Link>
 
         {/* Nav Items */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none">
           {NAV_ITEMS.map((item) => {
             const active = pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all group"
+                className="relative flex items-center gap-1 shrink-0 rounded-lg px-2 py-1.5 text-xs font-medium transition-all group"
               >
                 <span className={active ? "chameleon-icon" : "text-slate-500 group-hover:chameleon-icon"}>
                   <item.icon size={14} />

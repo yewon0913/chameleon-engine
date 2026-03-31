@@ -6,6 +6,7 @@ import {
   date,
   timestamp,
   jsonb,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 export const chameleonClients = pgTable("chameleon_clients", {
@@ -79,5 +80,53 @@ export const chameleonIntake = pgTable("chameleon_intake", {
   desiredServices: text("desired_services").array(),
   goals: text("goals").array(),
   budget: text("budget"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonCalendar = pgTable("chameleon_calendar", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  date: date("date").notNull(),
+  title: text("title").notNull(),
+  contentType: text("content_type").notNull().default("릴스"),
+  status: text("status").notNull().default("기획"),
+  channels: text("channels").array().default([]),
+  deployTime: text("deploy_time"),
+  memo: text("memo"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonDeploys = pgTable("chameleon_deploys", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  calendarId: uuid("calendar_id").references(() => chameleonCalendar.id, { onDelete: "cascade" }),
+  channel: text("channel").notNull(),
+  status: text("status").notNull().default("대기"),
+  metricsViews: integer("metrics_views").default(0),
+  metricsLikes: integer("metrics_likes").default(0),
+  metricsComments: integer("metrics_comments").default(0),
+  metricsShares: integer("metrics_shares").default(0),
+  deployedAt: timestamp("deployed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonProspects = pgTable("chameleon_prospects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessName: text("business_name").notNull(),
+  businessType: text("business_type"),
+  region: text("region"),
+  instagramHandle: text("instagram_handle"),
+  followers: integer("followers").default(0),
+  lastPostDate: date("last_post_date"),
+  contactStatus: text("contact_status").notNull().default("미발송"),
+  messageSentAt: timestamp("message_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const chameleonPortfolio = pgTable("chameleon_portfolio", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id").references(() => chameleonClients.id, { onDelete: "set null" }),
+  projectSummary: text("project_summary"),
+  results: jsonb("results").default({}),
+  isPublic: boolean("is_public").default(false),
+  slug: text("slug").unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

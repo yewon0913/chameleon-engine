@@ -1,7 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Film, FileText, PenTool, Users, ClipboardList, BarChart3 } from "lucide-react";
+import {
+  Film,
+  FileText,
+  Users,
+  ClipboardList,
+  BarChart3,
+  CalendarDays,
+  Send,
+  Target,
+  BarChart2,
+  Briefcase,
+} from "lucide-react";
 
 const MODULES = [
   {
@@ -12,6 +23,20 @@ const MODULES = [
     ready: true,
   },
   {
+    href: "/calendar",
+    icon: CalendarDays,
+    label: "콘텐츠 캘린더",
+    desc: "월간 콘텐츠 캘린더, AI 자동 기획, 드래그앤드롭 일정 관리",
+    ready: true,
+  },
+  {
+    href: "/deploy",
+    icon: Send,
+    label: "배포 관리",
+    desc: "원클릭 다채널 배포, 채널별 자동 최적화, 성과 추적",
+    ready: true,
+  },
+  {
     href: "/crm",
     icon: Users,
     label: "고객 관리 (CRM)",
@@ -19,10 +44,31 @@ const MODULES = [
     ready: true,
   },
   {
-    href: "/intake",
-    icon: ClipboardList,
-    label: "고객 설문",
-    desc: "신규 고객 마케팅 상담 설문 페이지",
+    href: "/outbound",
+    icon: Target,
+    label: "영업 자동화",
+    desc: "잠재 고객 발굴, AI 제안 메시지 생성, 발송 관리",
+    ready: true,
+  },
+  {
+    href: "/analytics",
+    icon: BarChart2,
+    label: "경쟁사 분석",
+    desc: "업종별 트렌드 분석, 성과 예측, 트렌드 레이더",
+    ready: true,
+  },
+  {
+    href: "/report",
+    icon: FileText,
+    label: "성과 리포트",
+    desc: "고객별 AI 리포트 자동 생성, 카톡 발송용 변환",
+    ready: true,
+  },
+  {
+    href: "/portfolio",
+    icon: Briefcase,
+    label: "포트폴리오",
+    desc: "완료 프로젝트 포트폴리오, 공개 URL 생성",
     ready: true,
   },
   {
@@ -33,18 +79,11 @@ const MODULES = [
     ready: true,
   },
   {
-    href: "#",
-    icon: PenTool,
-    label: "브랜딩 스튜디오",
-    desc: "로고, 네이밍, 슬로건, 브랜드 가이드 AI 생성",
-    ready: false,
-  },
-  {
-    href: "#",
-    icon: FileText,
-    label: "마케팅 플래너",
-    desc: "월간 콘텐츠 캘린더, 캠페인 기획, ROI 분석",
-    ready: false,
+    href: "/intake",
+    icon: ClipboardList,
+    label: "고객 설문",
+    desc: "신규 고객 마케팅 상담 설문 페이지",
+    ready: true,
   },
 ];
 
