@@ -24,28 +24,50 @@ import {
   Route,
 } from "lucide-react";
 
-const MAIN_NAV = [
-  { href: "/workflow", label: "워크플로우", icon: Route },
-  { href: "/content", label: "콘텐츠", icon: Film },
-  { href: "/osmu", label: "OSMU", icon: Layers },
-  { href: "/calendar", label: "캘린더", icon: CalendarDays },
-  { href: "/deploy", label: "배포", icon: Send },
-  { href: "/crm", label: "CRM", icon: Users },
+const NAV_GROUPS = [
+  {
+    label: "📝 콘텐츠",
+    items: [
+      { href: "/content", label: "콘텐츠 공장", icon: Film },
+      { href: "/osmu", label: "OSMU", icon: Layers },
+      { href: "/hashtag", label: "해시태그", icon: Hash },
+      { href: "/templates", label: "템플릿", icon: MessageSquare },
+    ],
+  },
+  {
+    label: "📅 운영",
+    items: [
+      { href: "/calendar", label: "캘린더", icon: CalendarDays },
+      { href: "/deploy", label: "배포", icon: Send },
+      { href: "/autopilot", label: "AI매니저", icon: Bot },
+      { href: "/workflow", label: "워크플로우", icon: Route },
+    ],
+  },
+  {
+    label: "👥 고객",
+    items: [
+      { href: "/crm", label: "CRM", icon: Users },
+      { href: "/outbound", label: "영업", icon: Target },
+      { href: "/funnel", label: "퍼널", icon: GitBranch },
+      { href: "/intake", label: "인테이크", icon: Users },
+    ],
+  },
+  {
+    label: "📊 분석",
+    items: [
+      { href: "/analytics", label: "경쟁사분석", icon: BarChart2 },
+      { href: "/report", label: "리포트", icon: FileText },
+      { href: "/revenue", label: "수익", icon: BarChart3 },
+      { href: "/simulator", label: "시뮬레이터", icon: Calculator },
+      { href: "/ab-test", label: "AB테스트", icon: FlaskConical },
+      { href: "/portfolio", label: "포트폴리오", icon: Briefcase },
+    ],
+  },
 ];
 
-const MORE_NAV = [
-  { href: "/outbound", label: "영업", icon: Target },
-  { href: "/analytics", label: "분석", icon: BarChart2 },
-  { href: "/report", label: "리포트", icon: FileText },
-  { href: "/portfolio", label: "포트폴리오", icon: Briefcase },
-  { href: "/revenue", label: "수익", icon: BarChart3 },
-  { href: "/hashtag", label: "해시태그", icon: Hash },
-  { href: "/simulator", label: "시뮬레이터", icon: Calculator },
-  { href: "/templates", label: "템플릿", icon: MessageSquare },
-  { href: "/autopilot", label: "AI매니저", icon: Bot },
-  { href: "/funnel", label: "퍼널", icon: GitBranch },
-  { href: "/ab-test", label: "AB테스트", icon: FlaskConical },
-];
+// Flatten for backward compat
+const MAIN_NAV = NAV_GROUPS.slice(0, 2).flatMap((g) => g.items).slice(0, 6);
+const MORE_NAV = NAV_GROUPS.slice(2).flatMap((g) => g.items);
 
 function ChameleonLogo() {
   return (
