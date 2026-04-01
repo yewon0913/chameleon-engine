@@ -44,22 +44,62 @@ const MODULES = [
 ];
 
 export default function ChameleonDashboard() {
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "좋은 아침이에요" : hour < 18 ? "좋은 오후예요" : "좋은 저녁이에요";
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
-      {/* Hero */}
-      <div className="mb-4 text-center">
-        <h1 className="chameleon-text text-4xl font-extrabold tracking-tight sm:text-5xl">
-          CHAMELEON
-        </h1>
-        <p className="mt-3 text-lg font-semibold chameleon-text">
-          AI 수익화 플랫폼
-        </p>
-        <p className="mt-1 text-sm text-slate-500">
-          소상공인 마케팅의 모든 것 — 18개 모듈 통합 플랫폼
-        </p>
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      {/* Greeting + Hero */}
+      <div className="mb-6">
+        <p className="text-sm text-slate-500">{greeting}! 🦎</p>
+        <h1 className="chameleon-text text-3xl font-extrabold tracking-tight sm:text-4xl mt-1">CHAMELEON</h1>
+        <p className="mt-1 text-sm text-slate-500">소상공인 마케팅의 모든 것 — 18개 모듈 통합 플랫폼</p>
       </div>
 
-      <div className="chameleon-underline mx-auto mb-10 w-32 rounded-full" />
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="card-luxury p-4 text-center">
+          <div className="text-[10px] text-slate-500">이번 달 매출</div>
+          <div className="text-xl font-black chameleon-text">350만원</div>
+          <div className="text-[10px] text-emerald-400">+23%</div>
+        </div>
+        <div className="card-luxury p-4 text-center">
+          <div className="text-[10px] text-slate-500">고객 수</div>
+          <div className="text-xl font-black text-white">12명</div>
+          <div className="text-[10px] text-emerald-400">+3 신규</div>
+        </div>
+        <div className="card-luxury p-4 text-center">
+          <div className="text-[10px] text-slate-500">평균 객단가</div>
+          <div className="text-xl font-black text-white">150만원</div>
+        </div>
+        <div className="card-luxury p-4 text-center">
+          <div className="text-[10px] text-slate-500">콘텐츠 생성</div>
+          <div className="text-xl font-black text-white">47개</div>
+          <div className="text-[10px] text-slate-500">이번 달</div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <Link href="/content" className="card-luxury p-3 flex items-center gap-2 hover:scale-[1.02] transition group">
+          <Film size={16} className="chameleon-icon" />
+          <span className="text-xs font-bold text-white group-hover:chameleon-text transition-colors">릴스 만들기</span>
+        </Link>
+        <Link href="/content" className="card-luxury p-3 flex items-center gap-2 hover:scale-[1.02] transition group">
+          <FileText size={16} className="chameleon-icon" />
+          <span className="text-xs font-bold text-white group-hover:chameleon-text transition-colors">블로그 쓰기</span>
+        </Link>
+        <Link href="/crm" className="card-luxury p-3 flex items-center gap-2 hover:scale-[1.02] transition group">
+          <Users size={16} className="chameleon-icon" />
+          <span className="text-xs font-bold text-white group-hover:chameleon-text transition-colors">고객 추가</span>
+        </Link>
+        <Link href="/report" className="card-luxury p-3 flex items-center gap-2 hover:scale-[1.02] transition group">
+          <BarChart3 size={16} className="chameleon-icon" />
+          <span className="text-xs font-bold text-white group-hover:chameleon-text transition-colors">리포트 보기</span>
+        </Link>
+      </div>
+
+      <div className="chameleon-underline mx-auto mb-8 w-32 rounded-full" />
 
       {/* Module Grid */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
