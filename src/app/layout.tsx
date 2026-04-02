@@ -35,7 +35,11 @@ export default function RootLayout({
       lang="ko"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full bg-[#0a0a0a] text-white">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        <meta name="theme-color" content="#0a0a0a" />
+      </head>
+      <body className="min-h-full bg-[#0a0a0a] text-white pb-16 lg:pb-0">
         <NavBar />
         {children}
       </body>

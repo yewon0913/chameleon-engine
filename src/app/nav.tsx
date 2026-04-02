@@ -189,6 +189,24 @@ export function NavBar() {
         </div>
       </div>
       <div className="chameleon-underline opacity-30" />
+
+      {/* 모바일 하단 네비 */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-white/[0.06] flex justify-around py-2 z-50" style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}>
+        {[
+          { href: "/content", label: "콘텐츠", icon: "📝" },
+          { href: "/customers", label: "고객", icon: "👥" },
+          { href: "/analytics", label: "분석", icon: "📊" },
+          { href: "/settings", label: "설정", icon: "⚙️" },
+        ].map((nav) => {
+          const active = pathname.startsWith(nav.href);
+          return (
+            <Link key={nav.href} href={nav.href} className={`flex flex-col items-center gap-0.5 px-3 py-1 min-w-[44px] min-h-[44px] justify-center ${active ? "chameleon-text" : "text-gray-500"}`}>
+              <span className="text-lg">{nav.icon}</span>
+              <span className="text-[9px] font-bold">{nav.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
