@@ -18,6 +18,7 @@ import { funnelRouter } from "../routers/funnel";
 import { abtestRouter } from "../routers/abtest";
 import { prospectRouter } from "../routers/prospect";
 import { marketingScoreRouter } from "../routers/marketing-score";
+import { contentGenerateRouter } from "../routers/content-generate";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -42,6 +43,7 @@ export const appRouter = router({
   abtest: abtestRouter,
   prospect: prospectRouter,
   marketingScore: marketingScoreRouter,
+  contentGenerate: contentGenerateRouter,
 });
 
 export type AppRouter = typeof appRouter;

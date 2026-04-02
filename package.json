@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
+    "@fal-ai/client": "^1.9.5",
     "@trpc/client": "^11.16.0",
     "@trpc/server": "^11.16.0",
     "drizzle-orm": "^0.45.2",
