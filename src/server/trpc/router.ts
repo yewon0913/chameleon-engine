@@ -16,6 +16,8 @@ import { templatesRouter } from "../routers/templates";
 import { autopilotRouter } from "../routers/autopilot";
 import { funnelRouter } from "../routers/funnel";
 import { abtestRouter } from "../routers/abtest";
+import { prospectRouter } from "../routers/prospect";
+import { marketingScoreRouter } from "../routers/marketing-score";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -38,6 +40,8 @@ export const appRouter = router({
   autopilot: autopilotRouter,
   funnel: funnelRouter,
   abtest: abtestRouter,
+  prospect: prospectRouter,
+  marketingScore: marketingScoreRouter,
 });
 
 export type AppRouter = typeof appRouter;

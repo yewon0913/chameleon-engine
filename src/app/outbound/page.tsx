@@ -46,6 +46,12 @@ export default function OutboundPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [filterStatus, setFilterStatus] = useState("");
   const [messageTarget, setMessageTarget] = useState<Prospect | null>(null);
+  // AI 잠재고객 발굴
+  const [findRegion, setFindRegion] = useState("");
+  const [findIndustry, setFindIndustry] = useState("");
+  const [finding, setFinding] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [foundProspects, setFoundProspects] = useState<any[]>([]);
 
   const load = async () => {
     try {
@@ -95,6 +101,63 @@ export default function OutboundPage() {
         <button onClick={() => setShowAdd(true)} className="btn-accent flex items-center gap-2 px-4 py-2.5 text-sm font-semibold">
           <Plus size={16} /> 잠재 고객 추가
         </button>
+      </div>
+
+      {/* AI 잠재고객 발굴 */}
+      <div className="mb-6 rounded-2xl chameleon-border-slow bg-black/40 p-5">
+        <h3 className="text-sm font-bold text-white mb-1">🔍 AI 잠재고객 자동 발굴</h3>
+        <p className="text-[11px] text-slate-500 mb-3">지역+업종 입력 → 마케팅 안 하는 사장님을 자동으로 찾아줍니다 (카카오+네이버 API)</p>
+        <div className="flex gap-2 items-end flex-wrap">
+          <div>
+            <label className="mb-1 block text-[10px] text-slate-400">지역</label>
+            <input value={findRegion} onChange={(e) => setFindRegion(e.target.value)} placeholder="창원, 부산, 강남..." className="rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white w-28 focus:outline-none" />
+          </div>
+          <div>
+            <label className="mb-1 block text-[10px] text-slate-400">업종</label>
+            <input value={findIndustry} onChange={(e) => setFindIndustry(e.target.value)} placeholder="미용실, 카페..." className="rounded-lg border chameleon-border-slow bg-black/40 px-3 py-2 text-sm text-white w-28 focus:outline-none" />
+          </div>
+          <button
+            onClick={async () => {
+              if (!findRegion || !findIndustry) return;
+              setFinding(true);
+              try {
+                const res = await trpc.prospect.find.mutate({ region: findRegion, industry: findIndustry, limit: 10 });
+                setFoundProspects(res.prospects);
+              } catch { setFoundProspects([]); }
+              finally { setFinding(false); }
+            }}
+            disabled={finding || !findRegion || !findIndustry}
+            className="btn-accent px-4 py-2 text-sm font-semibold flex items-center gap-1.5 disabled:opacity-50"
+          >
+            {finding ? <><div className="chameleon-spinner !w-4 !h-4 !border-2" /> 검색 중...</> : <><Target size={14} /> 발굴 시작</>}
+          </button>
+        </div>
+        {foundProspects.length > 0 && (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="border-b border-white/10">
+                <th className="px-2 py-2 text-left text-slate-400">상호명</th>
+                <th className="px-2 py-2 text-left text-slate-400">업종</th>
+                <th className="px-2 py-2 text-left text-slate-400">블로그</th>
+                <th className="px-2 py-2 text-left text-slate-400">우선순위</th>
+                <th className="px-2 py-2 text-left text-slate-400">전화</th>
+                <th className="px-2 py-2 text-left text-slate-400">액션</th>
+              </tr></thead>
+              <tbody>
+                {foundProspects.map((p, i) => (
+                  <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02]">
+                    <td className="px-2 py-2 font-semibold text-white">{p.place_name}</td>
+                    <td className="px-2 py-2 text-slate-400">{(p.category || "").split(" > ").pop()}</td>
+                    <td className="px-2 py-2 text-slate-400">{p.blog_mentions}건</td>
+                    <td className="px-2 py-2"><span className={`text-[10px] font-bold ${p.priority === "hot" ? "text-red-400" : p.priority === "warm" ? "text-yellow-400" : "text-slate-500"}`}>{p.priority_label}</span></td>
+                    <td className="px-2 py-2">{p.phone ? <a href={`tel:${p.phone}`} className="text-blue-400 hover:underline">{p.phone}</a> : "-"}</td>
+                    <td className="px-2 py-2"><a href={p.place_url} target="_blank" rel="noreferrer" className="text-[10px] text-[#D4AF37] hover:underline">카카오맵</a></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Status Filter */}
