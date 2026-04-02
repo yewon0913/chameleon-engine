@@ -19,6 +19,7 @@ import { abtestRouter } from "../routers/abtest";
 import { prospectRouter } from "../routers/prospect";
 import { marketingScoreRouter } from "../routers/marketing-score";
 import { contentGenerateRouter } from "../routers/content-generate";
+import { newsRouter } from "../routers/news";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -44,6 +45,7 @@ export const appRouter = router({
   prospect: prospectRouter,
   marketingScore: marketingScoreRouter,
   contentGenerate: contentGenerateRouter,
+  news: newsRouter,
 });
 
 export type AppRouter = typeof appRouter;
