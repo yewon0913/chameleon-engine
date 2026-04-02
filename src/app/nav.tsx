@@ -65,9 +65,14 @@ const NAV_GROUPS = [
   },
 ];
 
-// Flatten for backward compat
-const MAIN_NAV = NAV_GROUPS.slice(0, 2).flatMap((g) => g.items).slice(0, 6);
-const MORE_NAV = NAV_GROUPS.slice(2).flatMap((g) => g.items);
+// 4탭 메인 네비게이션
+const MAIN_NAV = [
+  { href: "/content", label: "콘텐츠", icon: Film },
+  { href: "/customers", label: "고객", icon: Users },
+  { href: "/analytics", label: "분석", icon: BarChart2 },
+  { href: "/settings", label: "설정", icon: CalendarDays },
+];
+const MORE_NAV = NAV_GROUPS.flatMap((g) => g.items).filter((item) => !MAIN_NAV.some((m) => m.href === item.href));
 
 function ChameleonLogo() {
   return (
