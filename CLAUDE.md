@@ -136,3 +136,8 @@ FAL_KEY
 - PR 전 → /review
 - 배포 전 → /qa + /cso
 - 배포 → /ship → /document-release → /learn
+
+## 🔄 자동 업그레이드 (주 2회)
+- 화: /retro → 콘텐츠 품질 점검
+- 금: /qa → 전 페이지 테스트 → /ship
+- 트렌드 반영 → 템플릿 갱신
