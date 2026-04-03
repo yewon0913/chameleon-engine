@@ -33,6 +33,7 @@ export default function IntakePage() {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState("");
 
   const [form, setForm] = useState({
     clientName: "",
@@ -97,7 +98,7 @@ export default function IntakePage() {
       });
       setDone(true);
     } catch {
-      alert("제출에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      setToast("제출에 실패했습니다. 잠시 후 다시 시도해주세요."); setTimeout(() => setToast(""), 3000);
     } finally {
       setSubmitting(false);
     }
@@ -369,6 +370,12 @@ export default function IntakePage() {
           )}
         </div>
       </div>
+
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

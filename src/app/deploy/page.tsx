@@ -61,6 +61,7 @@ export default function DeployPage() {
   const [pending, setPending] = useState<PendingContent[]>([]);
   const [deploys, setDeploys] = useState<DeployRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState("");
 
   const load = async () => {
     try {
@@ -91,7 +92,7 @@ export default function DeployPage() {
       await trpc.deploy.createDeploy.mutate({ calendarId, channel });
       load();
     } catch {
-      alert("배포 생성 실패");
+      setToast("배포 생성 실패"); setTimeout(() => setToast(""), 3000);
     }
   };
 
@@ -238,6 +239,12 @@ export default function DeployPage() {
               ))}
             </>
           )}
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
         </div>
       )}
     </div>

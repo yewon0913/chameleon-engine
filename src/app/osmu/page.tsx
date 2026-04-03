@@ -28,6 +28,7 @@ export default function OsmuPage() {
   const [result, setResult] = useState<Record<string, string> | null>(null);
   const [copied, setCopied] = useState("");
   const [recording, setRecording] = useState(false);
+  const [toast, setToast] = useState("");
 
   const transform = async () => {
     if (!content.trim()) return;
@@ -77,7 +78,7 @@ export default function OsmuPage() {
       setRecording(true);
       setTimeout(() => { if (mediaRecorder.state === "recording") mediaRecorder.stop(); }, 60000);
     } catch {
-      alert("마이크 접근 권한이 필요합니다.");
+      setToast("마이크 접근 권한이 필요합니다."); setTimeout(() => setToast(""), 3000);
     }
   };
 
@@ -162,6 +163,12 @@ export default function OsmuPage() {
       {result?.error && (
         <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6 text-center">
           <p className="text-sm text-red-300">{result.error}</p>
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
         </div>
       )}
     </div>

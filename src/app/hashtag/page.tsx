@@ -25,11 +25,13 @@ export default function HashtagPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<HashtagResult | null>(null);
   const [copied, setCopied] = useState("");
+  const [error, setError] = useState("");
 
   const generate = async () => {
     if (!industry.trim() || !keywords.trim()) return;
     setLoading(true);
     setResult(null);
+    setError("");
     try {
       const data = await trpc.hashtag.generate.mutate({
         industry,
@@ -40,7 +42,7 @@ export default function HashtagPage() {
         setResult(data.result as HashtagResult);
       }
     } catch {
-      alert("해시태그 생성에 실패했습니다.");
+      setError("해시태그 생성에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setLoading(false);
     }
@@ -97,6 +99,13 @@ export default function HashtagPage() {
           {loading ? <><div className="chameleon-spinner !w-4 !h-4 !border-2" /> 생성 중...</> : <><Sparkles size={14} /> 해시태그 30개 생성</>}
         </button>
       </div>
+
+      {/* Error */}
+      {error && (
+        <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 mb-4">
+          <p className="text-sm text-red-300">{error}</p>
+        </div>
+      )}
 
       {/* Results */}
       {result && (

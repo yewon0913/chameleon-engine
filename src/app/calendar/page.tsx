@@ -319,6 +319,7 @@ function ContentModal({
     memo: "",
   });
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState("");
 
   const set = (key: string, value: string) => setForm((p) => ({ ...p, [key]: value }));
   const toggleChannel = (ch: string) => {
@@ -344,7 +345,7 @@ function ContentModal({
       });
       onSaved();
     } catch {
-      alert("저장 실패");
+      setToast("저장 실패"); setTimeout(() => setToast(""), 3000);
       setSaving(false);
     }
   };
@@ -415,6 +416,11 @@ function ContentModal({
           </button>
         </form>
       </div>
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
@@ -431,6 +437,7 @@ function AIPlanModal({
   const [result, setResult] = useState<{ date: string; title: string; contentType: string; channels: string[] }[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [planRange, setPlanRange] = useState({ start: "", end: "" });
+  const [toast, setToast] = useState("");
 
   const today = new Date();
   const tomorrow = new Date(today);
@@ -459,10 +466,10 @@ function AIPlanModal({
         setResult(validated);
         setPlanRange({ start: data.startDate || "", end: data.endDate || "" });
       } else {
-        alert("AI 응답을 파싱할 수 없습니다. 다시 시도해주세요.");
+        setToast("AI 응답을 파싱할 수 없습니다. 다시 시도해주세요."); setTimeout(() => setToast(""), 3000);
       }
     } catch {
-      alert("AI 기획 실패");
+      setToast("AI 기획 실패"); setTimeout(() => setToast(""), 3000);
     } finally {
       setPlanning(false);
     }
@@ -489,7 +496,7 @@ function AIPlanModal({
         onPlanned(created as unknown as CalendarItem[]);
       }
     } catch {
-      alert("저장 실패");
+      setToast("저장 실패"); setTimeout(() => setToast(""), 3000);
       setSaving(false);
     }
   };
@@ -559,6 +566,11 @@ function AIPlanModal({
           </div>
         )}
       </div>
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

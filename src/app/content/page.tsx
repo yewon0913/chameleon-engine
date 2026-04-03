@@ -6,7 +6,7 @@ import { trpc } from "@/lib/trpc";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
-  Film, ShoppingBag, FileText, LayoutGrid, UserCircle,
+  Film, ShoppingBag, FileText, LayoutGrid, UserCircle, Hash,
   ChevronLeft, Copy, Check, Download, Loader2, Sparkles,
 } from "lucide-react";
 
@@ -14,7 +14,7 @@ import {
    상수 / 타입
    ═══════════════════════════════════════════ */
 
-type TabKey = "reels" | "detail" | "blog" | "cardnews" | "profile";
+type TabKey = "reels" | "detail" | "blog" | "cardnews" | "profile" | "hashtag";
 
 const TABS: { key: TabKey; label: string; icon: typeof Film }[] = [
   { key: "reels", label: "릴스/숏폼", icon: Film },
@@ -22,6 +22,7 @@ const TABS: { key: TabKey; label: string; icon: typeof Film }[] = [
   { key: "blog", label: "블로그", icon: FileText },
   { key: "cardnews", label: "카드뉴스", icon: LayoutGrid },
   { key: "profile", label: "SNS 프로필", icon: UserCircle },
+  { key: "hashtag", label: "해시태그", icon: Hash },
 ];
 
 const INDUSTRIES = ["음식점", "카페", "뷰티", "패션", "제조", "IT", "기타"];
@@ -125,6 +126,12 @@ export default function ChameleonContentPage() {
   const [profileKeywords, setProfileKeywords] = useState("");
   const [profileTone, setProfileTone] = useState("expert");
 
+  // 해시태그
+  const [hashIndustry, setHashIndustry] = useState("");
+  const [hashRegion, setHashRegion] = useState("");
+  const [hashKeywords, setHashKeywords] = useState("");
+  const [hashResult, setHashResult] = useState<{ hashtags?: { tag: string; competition: string }[]; instagram?: string; tiktok?: string; youtube?: string } | null>(null);
+
   async function handleGenerate() {
     setGenerating(true);
     setResult("");
@@ -160,13 +167,26 @@ export default function ChameleonContentPage() {
           pages: cardPages,
           style: cardStyle,
         });
-      } else {
+      } else if (tab === "profile") {
         res = await trpc.chameleon.generateProfile.mutate({
           industry: profileIndustry,
           targetCustomer: profileTarget,
           keywords: profileKeywords,
           brandTone: profileTone,
         });
+      } else {
+        // hashtag
+        const data = await trpc.hashtag.generate.mutate({
+          industry: hashIndustry,
+          region: hashRegion || undefined,
+          keywords: hashKeywords,
+        });
+        if (typeof data.result === "object") {
+          setHashResult(data.result as typeof hashResult);
+          res = { content: `### 해시태그 생성 완료\n\n**인스타그램**: ${(data.result as Record<string, string>).instagram || ""}\n\n**틱톡**: ${(data.result as Record<string, string>).tiktok || ""}\n\n**유튜브**: ${(data.result as Record<string, string>).youtube || ""}` };
+        } else {
+          res = { content: String(data.result) };
+        }
       }
       setResult(res.content);
     } catch (err) {
@@ -182,6 +202,7 @@ export default function ChameleonContentPage() {
     if (tab === "blog") return !!blogTopic;
     if (tab === "cardnews") return !!cardTopic;
     if (tab === "profile") return !!(profileIndustry && profileTarget && profileKeywords);
+    if (tab === "hashtag") return !!(hashIndustry && hashKeywords);
     return false;
   }
 
@@ -281,7 +302,7 @@ export default function ChameleonContentPage() {
         {TABS.map((t) => (
           <button
             key={t.key}
-            onClick={() => { setTab(t.key); setResult(""); setCopiedKey(""); setToast(""); }}
+            onClick={() => { setTab(t.key); setResult(""); setCopiedKey(""); setToast(""); setHashResult(null); }}
             className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition-all ${
               tab === t.key
                 ? "chameleon-gradient text-white shadow-lg"
@@ -334,6 +355,13 @@ export default function ChameleonContentPage() {
             target={profileTarget} setTarget={setProfileTarget}
             keywords={profileKeywords} setKeywords={setProfileKeywords}
             tone={profileTone} setTone={setProfileTone}
+          />
+        )}
+        {tab === "hashtag" && (
+          <HashtagForm
+            industry={hashIndustry} setIndustry={setHashIndustry}
+            region={hashRegion} setRegion={setHashRegion}
+            keywords={hashKeywords} setKeywords={setHashKeywords}
           />
         )}
 
@@ -657,6 +685,36 @@ function CardNewsForm({
       <div>
         <SectionLabel>스타일</SectionLabel>
         <ToggleGroup options={CARD_STYLES} value={style} onChange={setStyle} />
+      </div>
+    </div>
+  );
+}
+
+/* ── 탭 6: 해시태그 ── */
+function HashtagForm({
+  industry, setIndustry, region, setRegion, keywords, setKeywords,
+}: {
+  industry: string; setIndustry: (v: string) => void;
+  region: string; setRegion: (v: string) => void;
+  keywords: string; setKeywords: (v: string) => void;
+}) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <SectionLabel>업종 *</SectionLabel>
+        <ToggleGroup
+          options={INDUSTRIES.map((i) => ({ key: i, label: i }))}
+          value={industry}
+          onChange={setIndustry}
+        />
+      </div>
+      <div>
+        <SectionLabel>지역 (선택)</SectionLabel>
+        <TextInput value={region} onChange={setRegion} placeholder="예: 강남, 홍대, 부산" />
+      </div>
+      <div>
+        <SectionLabel>키워드 *</SectionLabel>
+        <TextInput value={keywords} onChange={setKeywords} placeholder="예: 라떼, 분위기좋은, 데이트코스" />
       </div>
     </div>
   );

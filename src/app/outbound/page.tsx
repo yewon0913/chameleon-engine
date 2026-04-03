@@ -257,6 +257,7 @@ function AddProspectModal({ onClose, onCreated }: { onClose: () => void; onCreat
   });
   const [saving, setSaving] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [toast, setToast] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [aiInsight, setAiInsight] = useState<any>(null);
 
@@ -296,7 +297,7 @@ function AddProspectModal({ onClose, onCreated }: { onClose: () => void; onCreat
       });
       onCreated();
     } catch {
-      alert("저장 실패");
+      setToast("저장 실패"); setTimeout(() => setToast(""), 3000);
       setSaving(false);
     }
   };
@@ -387,6 +388,11 @@ function AddProspectModal({ onClose, onCreated }: { onClose: () => void; onCreat
           </button>
         </form>
       </div>
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

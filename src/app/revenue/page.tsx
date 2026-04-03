@@ -513,6 +513,7 @@ function AddRevenueModal({
     clientId: "",
   });
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState("");
 
   const serviceTypes = [
     "릴스/숏폼",
@@ -538,7 +539,7 @@ function AddRevenueModal({
       });
       onCreated();
     } catch {
-      alert("저장 실패. DB 연결을 확인하세요.");
+      setToast("저장 실패. DB 연결을 확인하세요."); setTimeout(() => setToast(""), 3000);
       setSaving(false);
     }
   };
@@ -610,6 +611,11 @@ function AddRevenueModal({
           </button>
         </form>
       </div>
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
@@ -630,6 +636,7 @@ function GoalModal({
     current ? String(current.targetAmount) : ""
   );
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -643,7 +650,7 @@ function GoalModal({
       });
       onSaved();
     } catch {
-      alert("저장 실패");
+      setToast("저장 실패"); setTimeout(() => setToast(""), 3000);
       setSaving(false);
     }
   };
@@ -710,6 +717,11 @@ function GoalModal({
           </button>
         </form>
       </div>
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

@@ -41,6 +41,7 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [tab, setTab] = useState<"portfolio" | "projects">("portfolio");
+  const [toast, setToast] = useState("");
 
   const load = async () => {
     try {
@@ -179,7 +180,7 @@ export default function PortfolioPage() {
                       slug: `project-${proj.id.slice(0, 8)}`,
                     });
                     load();
-                  } catch { alert("추가 실패"); }
+                  } catch { setToast("추가 실패"); setTimeout(() => setToast(""), 3000); }
                 }}
                   className="btn-ghost flex items-center gap-1 px-3 py-1.5 text-xs text-slate-300">
                   <Plus size={12} /> 포트폴리오 추가
@@ -197,6 +198,12 @@ export default function PortfolioPage() {
           onCreated={() => { setShowAdd(false); load(); }}
         />
       )}
+
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
@@ -211,6 +218,7 @@ function AddPortfolioModal({ onClose, onCreated }: { onClose: () => void; onCrea
     slug: "",
   });
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState("");
 
   const set = (key: string, value: string | boolean) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -232,7 +240,7 @@ function AddPortfolioModal({ onClose, onCreated }: { onClose: () => void; onCrea
       });
       onCreated();
     } catch {
-      alert("저장 실패");
+      setToast("저장 실패"); setTimeout(() => setToast(""), 3000);
       setSaving(false);
     }
   };
@@ -287,6 +295,11 @@ function AddPortfolioModal({ onClose, onCreated }: { onClose: () => void; onCrea
           </button>
         </form>
       </div>
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

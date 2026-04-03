@@ -25,6 +25,7 @@ export default function AbTestPage() {
   const [title, setTitle] = useState("");
   const [contentType, setContentType] = useState("릴스");
   const [creating, setCreating] = useState(false);
+  const [toast, setToast] = useState("");
 
   const load = async () => {
     try {
@@ -48,7 +49,7 @@ export default function AbTestPage() {
       setTitle("");
       load();
     } catch {
-      alert("생성 실패");
+      setToast("생성 실패"); setTimeout(() => setToast(""), 3000);
     } finally {
       setCreating(false);
     }
@@ -58,7 +59,7 @@ export default function AbTestPage() {
     try {
       await trpc.abtest.analyze.mutate({ id });
       load();
-    } catch { alert("분석 실패"); }
+    } catch { setToast("분석 실패"); setTimeout(() => setToast(""), 3000); }
   };
 
   const updateMetric = async (id: string, version: string, field: string, value: number) => {
@@ -194,6 +195,12 @@ export default function AbTestPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
         </div>
       )}
     </div>

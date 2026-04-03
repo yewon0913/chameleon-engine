@@ -29,6 +29,7 @@ export default function SimulatorPage() {
   });
   const [result, setResult] = useState<SimResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState("");
 
   const set = (key: string, value: number | string) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -44,7 +45,7 @@ export default function SimulatorPage() {
       });
       setResult(data as SimResult);
     } catch {
-      alert("계산 실패");
+      setToast("계산 실패"); setTimeout(() => setToast(""), 3000);
     } finally {
       setLoading(false);
     }
@@ -198,6 +199,12 @@ export default function SimulatorPage() {
           </div>
         )}
       </div>
+
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-red-500/90 px-5 py-2.5 text-sm font-bold text-white shadow-2xl animate-pulse">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
