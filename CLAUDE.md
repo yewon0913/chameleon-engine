@@ -128,3 +128,11 @@ FAL_KEY
 - 코드 수정 후 → /review
 - 배포 전 → /qa 브라우저 테스트
 - UI 변경 → /plan-design-review
+
+---
+
+## gstack 33개 스킬 활용
+- UI 변경 → /plan-design-review
+- PR 전 → /review
+- 배포 전 → /qa + /cso
+- 배포 → /ship → /document-release → /learn
