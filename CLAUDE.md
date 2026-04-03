@@ -121,3 +121,10 @@ FAL_KEY
 - 구축 고객 사후 관리 1개월
 - 월간 마케팅 성과 리포트
 - 포트폴리오 Before/After 수집
+
+---
+
+## gstack 활용 (카멜레온)
+- 코드 수정 후 → /review
+- 배포 전 → /qa 브라우저 테스트
+- UI 변경 → /plan-design-review
