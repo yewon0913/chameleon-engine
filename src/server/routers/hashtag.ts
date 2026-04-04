@@ -37,7 +37,7 @@ export const hashtagRouter = router({
       );
 
       try {
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        const jsonMatch = content.match(/\{[\s\S]*?\}(?=[^}]*$)/);
         const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : content);
         return { result: parsed };
       } catch {
