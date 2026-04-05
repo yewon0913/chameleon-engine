@@ -10,7 +10,9 @@
 - Next.js 16 + TypeScript + Tailwind CSS 4
 - tRPC + Drizzle ORM + Supabase PostgreSQL
 - AI: Anthropic Claude API (claude-sonnet-4-20250514)
-- 영상: fal.ai (FLUX 2 Pro + Kling V2)
+- 이미지: Nano Banana 2 (Gemini 3.1 Flash Image) + FLUX 2.0
+- 영상: Veo 3.1 (구글, 메인) + Kling 3.0 (fal.ai $0.029/초, 서브)
+- 레거시: fal.ai (FLUX + Kling 연동)
 - 차트: Recharts
 - Vercel 배포 (ICN 서울)
 
