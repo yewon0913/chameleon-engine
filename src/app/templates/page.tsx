@@ -46,6 +46,7 @@ export default function TemplatesPage() {
       setTemplates(data as unknown as Template[]);
     } catch {
       setTemplates([]);
+      setError("템플릿을 불러올 수 없습니다. DB 연결을 확인하세요.");
     } finally {
       setLoading(false);
     }
