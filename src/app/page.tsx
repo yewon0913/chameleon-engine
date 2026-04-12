@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { trpc } from "@/lib/trpc";
 import {
   Film,
   FileText,
@@ -47,6 +49,36 @@ export default function ChameleonDashboard() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "좋은 아침이에요" : hour < 18 ? "좋은 오후예요" : "좋은 저녁이에요";
 
+  const [kpi, setKpi] = useState({ revenue: 0, revenueChange: 0, newClients: 0, avgPrice: 0 });
+  const [clientCount, setClientCount] = useState(0);
+  const [contentCount, setContentCount] = useState(0);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [dashboard, clients, calendar] = await Promise.all([
+          trpc.revenue.getDashboard.query(),
+          trpc.crm.listClients.query(),
+          trpc.calendar.listByMonth.query({
+            month: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`,
+          }),
+        ]);
+        setKpi(dashboard.kpi);
+        setClientCount(clients.length);
+        setContentCount(calendar.length);
+      } catch (e) {
+        console.error("KPI fetch failed:", e);
+      }
+    }
+    load();
+  }, []);
+
+  const formatWon = (n: number) => {
+    if (n >= 10000) return `${Math.round(n / 10000)}만원`;
+    if (n >= 1000) return `${(n / 10000).toFixed(1)}만원`;
+    return `${n.toLocaleString()}원`;
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       {/* Greeting + Hero */}
@@ -60,21 +92,23 @@ export default function ChameleonDashboard() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <div className="card-luxury p-4 text-center">
           <div className="text-[10px] text-slate-500">이번 달 매출</div>
-          <div className="text-xl font-black chameleon-text">350만원</div>
-          <div className="text-[10px] text-emerald-400">+23%</div>
+          <div className="text-xl font-black chameleon-text">{formatWon(kpi.revenue)}</div>
+          <div className={`text-[10px] ${kpi.revenueChange >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+            {kpi.revenueChange >= 0 ? "+" : ""}{kpi.revenueChange}%
+          </div>
         </div>
         <div className="card-luxury p-4 text-center">
           <div className="text-[10px] text-slate-500">고객 수</div>
-          <div className="text-xl font-black text-white">12명</div>
-          <div className="text-[10px] text-emerald-400">+3 신규</div>
+          <div className="text-xl font-black text-white">{clientCount}명</div>
+          <div className="text-[10px] text-emerald-400">+{kpi.newClients} 신규</div>
         </div>
         <div className="card-luxury p-4 text-center">
           <div className="text-[10px] text-slate-500">평균 객단가</div>
-          <div className="text-xl font-black text-white">150만원</div>
+          <div className="text-xl font-black text-white">{formatWon(kpi.avgPrice)}</div>
         </div>
         <div className="card-luxury p-4 text-center">
           <div className="text-[10px] text-slate-500">콘텐츠 생성</div>
-          <div className="text-xl font-black text-white">47개</div>
+          <div className="text-xl font-black text-white">{contentCount}개</div>
           <div className="text-[10px] text-slate-500">이번 달</div>
         </div>
       </div>

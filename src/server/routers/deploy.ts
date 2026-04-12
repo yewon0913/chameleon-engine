@@ -4,6 +4,7 @@ import { db } from "../db/client";
 import { chameleonDeploys, chameleonCalendar } from "../db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { chatWithClaude } from "@/lib/claude-api";
+import { publishContent, getProfiles } from "@/lib/social/buffer-client";
 
 export const deployRouter = router({
   // 배포 목록 (캘린더 정보 포함)
@@ -148,5 +149,43 @@ ${input.content}`;
       );
 
       return { content };
+    }),
+
+  // Buffer 프로필 목록 조회
+  getBufferProfiles: publicProcedure
+    .input(z.object({ token: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const profiles = await getProfiles(input.token);
+      return profiles;
+    }),
+
+  // Buffer로 SNS 게시
+  publishToBuffer: publicProcedure
+    .input(
+      z.object({
+        token: z.string().min(1),
+        profileIds: z.array(z.string()).min(1),
+        title: z.string().min(1),
+        body: z.string().min(1),
+        hashtags: z.array(z.string()).default([]),
+        deployId: z.string().uuid().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const result = await publishContent(input.token, input.profileIds, {
+        title: input.title,
+        body: input.body,
+        hashtags: input.hashtags,
+      });
+
+      // 배포 ID가 있으면 상태를 배포완료로 업데이트
+      if (input.deployId) {
+        await db
+          .update(chameleonDeploys)
+          .set({ status: "배포완료", deployedAt: new Date() })
+          .where(eq(chameleonDeploys.id, input.deployId));
+      }
+
+      return result;
     }),
 });
