@@ -1,5 +1,27 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# 카멜레온 마케팅 플랫폼 — Agent 지침
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## 역할
+마케팅 콘텐츠 자동 생성 + 배포 + 분석 + 고객 관리.
+소상공인 대표님의 마케팅 전담 AI 팀.
+
+## 핵심 파일
+- CLAUDE.md: 전체 프로젝트 지침
+- docs/brand-guide.md: 카멜레온 브랜드 가이드
+- src/lib/social/buffer-client.ts: SNS 자동 게시
+
+## 콘텐츠 생성 규칙
+- 릴스: 30초 타임라인 + 후킹 3초 + BGM 추천
+- 블로그: SEO 키워드 3회+ 반복, 1500자+
+- 카드뉴스: 최소 5장 + 마지막 CTA
+- 해시태그: 대형10 + 중형10 + 소형10 = 30개
+
+## 학습 대상
+- 콘텐츠 성과 → 어떤 게 반응 좋은지 학습
+- 업종별 키워드 트렌드 → 자동 갱신
+- 고객 피드백 → 템플릿 자체 개선
+- 경쟁사 콘텐츠 → 차별화 포인트 도출
+
+## 자율 운영
+- 매일: 뉴스 수집 → 콘텐츠 초안 자동 생성
+- 매주: 성과 분석 → 전략 보정
+- 상시: 고객 요청 → 즉시 생성+배포
