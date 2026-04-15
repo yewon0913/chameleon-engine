@@ -94,6 +94,7 @@ export default function ChameleonContentPage() {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [bodyImageUrl, setBodyImageUrl] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState("");
   const [toast, setToast] = useState("");
 
@@ -137,6 +138,7 @@ export default function ChameleonContentPage() {
     setGenerating(true);
     setResult("");
     setThumbnailUrl(null);
+    setBodyImageUrl(null);
     setCopiedKey("");
     setToast("");
     try {
@@ -150,6 +152,7 @@ export default function ChameleonContentPage() {
         });
         res = reelsRes;
         if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
+        if (reelsRes.bodyImageUrl) setBodyImageUrl(reelsRes.bodyImageUrl);
       } else if (tab === "detail") {
         res = await trpc.chameleon.generateDetailPage.mutate({
           platform: PLATFORMS.find((p) => p.key === detailPlatform)?.label || detailPlatform,
@@ -306,7 +309,7 @@ export default function ChameleonContentPage() {
         {TABS.map((t) => (
           <button
             key={t.key}
-            onClick={() => { setTab(t.key); setResult(""); setThumbnailUrl(null); setCopiedKey(""); setToast(""); setHashResult(null); }}
+            onClick={() => { setTab(t.key); setResult(""); setThumbnailUrl(null); setBodyImageUrl(null); setCopiedKey(""); setToast(""); setHashResult(null); }}
             className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition-all ${
               tab === t.key
                 ? "chameleon-gradient text-white shadow-lg"
@@ -415,14 +418,27 @@ export default function ChameleonContentPage() {
                 </div>
               </div>
 
-              {/* 썸네일 이미지 (릴스) */}
-              {thumbnailUrl && tab === "reels" && (
+              {/* AI 이미지 2장 (릴스) */}
+              {(thumbnailUrl || bodyImageUrl) && tab === "reels" && (
                 <div className="card-luxury shadow-xl overflow-hidden">
                   <div className="px-5 py-3 border-b border-white/5">
-                    <h4 className="text-xs font-bold text-white">🖼️ AI 썸네일</h4>
+                    <h4 className="text-xs font-bold text-white">🖼️ AI 생성 이미지</h4>
                   </div>
-                  <div className="p-4 flex justify-center">
-                    <img src={thumbnailUrl} alt="릴스 썸네일" className="rounded-xl max-h-80 object-cover shadow-lg" />
+                  <div className="p-4 grid grid-cols-2 gap-3">
+                    {thumbnailUrl && (
+                      <div>
+                        <p className="text-[10px] text-slate-400 mb-1.5">썸네일</p>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={thumbnailUrl} alt="썸네일" className="rounded-xl w-full aspect-square object-cover shadow-lg" />
+                      </div>
+                    )}
+                    {bodyImageUrl && (
+                      <div>
+                        <p className="text-[10px] text-slate-400 mb-1.5">본문용</p>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={bodyImageUrl} alt="본문용" className="rounded-xl w-full aspect-square object-cover shadow-lg" />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

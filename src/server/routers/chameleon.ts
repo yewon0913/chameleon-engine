@@ -24,20 +24,31 @@ export const chameleonRouter = router({
     .mutation(async ({ input }) => {
       const prompt = buildReelsPrompt(input);
 
-      // 텍스트 + 이미지 동시 생성!
-      const [content, thumbnail] = await Promise.all([
+      // 업종별 이미지 프롬프트
+      const ind = (input.industry + input.videoStyle).toLowerCase();
+      const isFood = /음식|카페|커피|베이커리|빵|치킨|피자|분식|한식|중식|일식|양식|디저트|푸드|맛/.test(ind);
+      const isBeauty = /미용|네일|뷰티|화장|헤어|속눈썹|피부/.test(ind);
+
+      const imgPrompt = isFood
+        ? `Delicious ${input.productName}, professional food photography, appetizing, warm lighting, top-down angle, shallow depth of field, 4K`
+        : isBeauty
+          ? `${input.productName}, beauty product shot, soft diffused lighting, clean minimal background, elegant, 4K`
+          : `${input.productName}, minimal product photography, studio lighting, white background, premium feel, 4K`;
+
+      // 텍스트 + 이미지 2장 동시 생성!
+      const [content, thumbnail, bodyImage] = await Promise.all([
         chatWithClaude(
-          "당신은 SNS 숏폼 콘텐츠 전문 프로듀서입니다. 영상 프롬프트는 Scene/Camera/Motion/Lighting 4요소를 반드시 포함하세요.",
+          "당신은 SNS 숏폼 콘텐츠 전문 프로듀서입니다. 영상 프롬프트는 Scene/Motion/Lighting 3요소를 반드시 포함하세요.",
           [{ role: "user", content: prompt }],
         ),
-        generateImageFast(
-          `${input.productName} ${input.industry} professional ${input.videoStyle} photography, cinematic lighting, 4K`
-        ).catch(() => null),
+        generateImageFast(imgPrompt).catch(() => null),
+        generateImageFast(`${imgPrompt}, different angle, lifestyle context`).catch(() => null),
       ]);
 
       return {
         content,
         thumbnailUrl: thumbnail?.url || null,
+        bodyImageUrl: bodyImage?.url || null,
         type: "reels" as const,
       };
     }),
