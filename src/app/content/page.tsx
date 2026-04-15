@@ -113,7 +113,7 @@ export default function ChameleonContentPage() {
   const [reelsStyle, setReelsStyle] = useState("");
   const [reelsProduct, setReelsProduct] = useState("");
   const [reelsMessage, setReelsMessage] = useState("");
-  const [reelsDuration, setReelsDuration] = useState("15");
+  const [reelsDuration, setReelsDuration] = useState("10");
 
   // 상세페이지
   const [detailPlatform, setDetailPlatform] = useState("");
@@ -753,7 +753,7 @@ function ReelsForm({
       <div>
         <SectionLabel>영상 길이</SectionLabel>
         <div className="flex gap-2">
-          {[{k:"5",l:"5초 (썸네일)"},{k:"10",l:"10초 (숏폼)"},{k:"15",l:"15초"},{k:"30",l:"30초 (풀)"}].map(o => (
+          {[{k:"5",l:"5초 (짧은)"},{k:"10",l:"10초 (추천)"}].map(o => (
             <button key={o.k} onClick={() => setReelsDuration(o.k)}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-medium transition ${reelsDuration === o.k ? "chameleon-bg text-black" : "bg-white/5 text-slate-400 border border-white/10"}`}
             >{o.l}</button>

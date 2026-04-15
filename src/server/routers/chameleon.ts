@@ -48,17 +48,27 @@ export const chameleonRouter = router({
       const imgPrompt = (imgPromptRaw || `${input.productName} professional photography, 4K`).trim();
       const model = selectImageModel(input.industry);
 
-      // 이미지 2장 + 나레이션 (50초 이내)
-      const captionMatch = content.match(/캡션[:\s]*(.+?)(?:\n|$)/i) || content.match(/문구[:\s]*(.+?)(?:\n|$)/i);
-      const narrationText = captionMatch?.[1] || `${input.productName}, ${input.coreMessage || input.industry}`;
+      // 버그1: 나레이션 텍스트 → "나레이션 스크립트" 섹션에서 추출
+      const narrMatch = content.match(/나레이션[\s\S]*?스크립트[:\s]*([\s\S]*?)(?=###|$)/i);
+      const captionMatch = content.match(/인스타그램[:\s]*(.+?)(?:\n|$)/i) || content.match(/캡션[:\s]*(.+?)(?:\n|$)/i);
+      const rawNarr = narrMatch?.[1]?.replace(/\*\*/g, "").replace(/Scene \d[^:]*:/gi, "").trim();
+      const narrationText = rawNarr && rawNarr.length >= 50
+        ? rawNarr.slice(0, 500)
+        : captionMatch?.[1]?.slice(0, 500)
+          || `${input.productName}의 매력을 지금 바로 확인하세요. ${input.coreMessage || input.industry}. 프로필 링크에서 더 알아보세요.`;
+
+      // 버그2: 영상 프롬프트 → AI가 생성한 Scene 프롬프트 사용
+      const sceneMatch = content.match(/영상 프롬프트[\s\S]*?(Scene[\s\S]*?)(?=###|🖼️|📝|$)/i)
+        || content.match(/(Scene 1[\s\S]*?Scene [34][\s\S]*?)(?=###|🖼️|📝|$)/i);
+      const aiVideoPrompt = sceneMatch?.[1]?.trim().slice(0, 800) || `${imgPrompt}, slow motion, cinematic, 9:16 vertical`;
 
       const [thumbnail, bodyImage, narration] = await Promise.all([
-        generateImage(imgPrompt + ", top-down angle, appetizing, warm lighting", { model }).catch((e) => { console.error("[reels] 이미지1 실패:", (e as Error).message?.slice(0, 50)); return null; }),
-        generateImage(imgPrompt + ", 45 degree angle, lifestyle setting, shallow depth of field", { model }).catch((e) => { console.error("[reels] 이미지2 실패:", (e as Error).message?.slice(0, 50)); return null; }),
-        generateNarration(narrationText).catch((e) => { console.error("[reels] 나레이션 실패:", (e as Error).message?.slice(0, 50)); return null; }),
+        generateImage(imgPrompt + ", top-down angle, appetizing, warm lighting", { model }).catch((e) => { console.error("[reels] 이미지1:", (e as Error).message?.slice(0, 50)); return null; }),
+        generateImage(imgPrompt + ", 45 degree angle, lifestyle setting, shallow depth of field", { model }).catch((e) => { console.error("[reels] 이미지2:", (e as Error).message?.slice(0, 50)); return null; }),
+        generateNarration(narrationText).catch((e) => { console.error("[reels] 나레이션:", (e as Error).message?.slice(0, 50)); return null; }),
       ]);
 
-      console.log(`[reels] 결과: img1=${!!thumbnail} img2=${!!bodyImage} narr=${!!narration} videoPrompt=${imgPrompt.slice(0,30)}`);
+      console.log(`[reels] narr=${!!narration}(${narrationText.length}자) video="${aiVideoPrompt.slice(0,40)}"`);
 
       return {
         content,
@@ -66,8 +76,8 @@ export const chameleonRouter = router({
         bodyImageUrl: bodyImage?.url || null,
         narrationUrl: narration,
         narrationText,
-        videoPrompt: `${imgPrompt}, slow motion, cinematic`,
-        videoDuration: input.duration || "5",
+        videoPrompt: aiVideoPrompt,
+        videoDuration: input.duration || "10",
         type: "reels" as const,
       };
     }),

@@ -13,8 +13,8 @@ export async function generateVideo(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const input: any = {
       prompt,
-      duration: options?.duration || "5",
-      aspect_ratio: options?.aspectRatio || "16:9",
+      duration: options?.duration || "10",
+      aspect_ratio: options?.aspectRatio || "9:16",
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await (fal as any).subscribe(
