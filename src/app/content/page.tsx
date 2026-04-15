@@ -95,6 +95,7 @@ export default function ChameleonContentPage() {
   const [result, setResult] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [bodyImageUrl, setBodyImageUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState("");
   const [toast, setToast] = useState("");
 
@@ -139,6 +140,7 @@ export default function ChameleonContentPage() {
     setResult("");
     setThumbnailUrl(null);
     setBodyImageUrl(null);
+    setVideoUrl(null);
     setCopiedKey("");
     setToast("");
     try {
@@ -153,6 +155,7 @@ export default function ChameleonContentPage() {
         res = reelsRes;
         if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
         if (reelsRes.bodyImageUrl) setBodyImageUrl(reelsRes.bodyImageUrl);
+        if ((reelsRes as any).videoUrl) setVideoUrl((reelsRes as any).videoUrl);
       } else if (tab === "detail") {
         res = await trpc.chameleon.generateDetailPage.mutate({
           platform: PLATFORMS.find((p) => p.key === detailPlatform)?.label || detailPlatform,
@@ -439,6 +442,18 @@ export default function ChameleonContentPage() {
                         <img src={bodyImageUrl} alt="본문용" className="rounded-xl w-full aspect-square object-cover shadow-lg" />
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* AI 영상 미리보기 (릴스) */}
+              {videoUrl && tab === "reels" && (
+                <div className="card-luxury shadow-xl overflow-hidden">
+                  <div className="px-5 py-3 border-b border-white/5">
+                    <h4 className="text-xs font-bold text-white">🎬 AI 영상 (5초)</h4>
+                  </div>
+                  <div className="p-4 flex justify-center">
+                    <video src={videoUrl} controls autoPlay muted loop className="rounded-xl max-h-80 shadow-lg" />
                   </div>
                 </div>
               )}

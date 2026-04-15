@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc/init";
 import { chatWithClaude } from "@/lib/claude-api";
-import { generateImageFast } from "@/lib/image-generator";
+import { generateImage, generateImageFast, selectImageModel } from "@/lib/image-generator";
+import { generateVideo } from "@/lib/video-generator";
 import {
   buildReelsPrompt,
   buildDetailPagePrompt,
@@ -24,31 +25,33 @@ export const chameleonRouter = router({
     .mutation(async ({ input }) => {
       const prompt = buildReelsPrompt(input);
 
-      // 업종별 이미지 프롬프트
-      const ind = (input.industry + input.videoStyle).toLowerCase();
-      const isFood = /음식|카페|커피|베이커리|빵|치킨|피자|분식|한식|중식|일식|양식|디저트|푸드|맛/.test(ind);
-      const isBeauty = /미용|네일|뷰티|화장|헤어|속눈썹|피부/.test(ind);
-
-      const imgPrompt = isFood
-        ? `Delicious ${input.productName}, professional food photography, appetizing, warm lighting, top-down angle, shallow depth of field, 4K`
-        : isBeauty
-          ? `${input.productName}, beauty product shot, soft diffused lighting, clean minimal background, elegant, 4K`
-          : `${input.productName}, minimal product photography, studio lighting, white background, premium feel, 4K`;
-
-      // 텍스트 + 이미지 2장 동시 생성!
-      const [content, thumbnail, bodyImage] = await Promise.all([
+      // 1단계: AI가 최적 이미지 프롬프트 생성
+      const [content, imgPromptRaw] = await Promise.all([
         chatWithClaude(
           "당신은 SNS 숏폼 콘텐츠 전문 프로듀서입니다. 영상 프롬프트는 Scene/Motion/Lighting 3요소를 반드시 포함하세요.",
           [{ role: "user", content: prompt }],
         ),
-        generateImageFast(imgPrompt).catch(() => null),
-        generateImageFast(`${imgPrompt}, different angle, lifestyle context`).catch(() => null),
+        chatWithClaude(
+          "You are a professional photographer. Output ONLY the English prompt, nothing else.",
+          [{ role: "user", content: `업종: ${input.industry}\n제품: ${input.productName}\n스타일: ${input.videoStyle}\n\n이 제품의 고품질 사진 프롬프트를 영문으로 만들어줘.\n한국 음식이면 정확한 영문명+특징 포함.\n예: 차돌해물짬뽕 → Korean spicy jjamppong noodle soup with marbled beef brisket, shrimp, squid, mussels in fiery red chili broth, steam rising, ceramic bowl, dark wooden table\n\n프롬프트만. 다른 설명 없이.` }],
+        ),
+      ]);
+
+      const imgPrompt = (imgPromptRaw || `${input.productName} professional photography, 4K`).trim();
+      const model = selectImageModel(input.industry);
+
+      // 2단계: 이미지 2장 + 영상 1개 동시 생성
+      const [thumbnail, bodyImage, video] = await Promise.all([
+        generateImage(imgPrompt + ", top-down angle, appetizing, warm lighting", { model }).catch(() => null),
+        generateImage(imgPrompt + ", 45 degree angle, lifestyle setting, shallow depth of field", { model }).catch(() => null),
+        generateVideo(`${imgPrompt}, slow motion, cinematic`, { duration: "5", aspectRatio: "9:16" }).catch(() => null),
       ]);
 
       return {
         content,
         thumbnailUrl: thumbnail?.url || null,
         bodyImageUrl: bodyImage?.url || null,
+        videoUrl: video?.url || null,
         type: "reels" as const,
       };
     }),
