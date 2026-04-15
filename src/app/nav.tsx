@@ -24,32 +24,13 @@ import {
   Route,
 } from "lucide-react";
 
+// Phase 1: 핵심 메뉴만 표시
 const NAV_GROUPS = [
   {
     label: "📝 콘텐츠",
     items: [
       { href: "/content", label: "콘텐츠 공장", icon: Film },
-      { href: "/osmu", label: "OSMU", icon: Layers },
       { href: "/hashtag", label: "해시태그", icon: Hash },
-      { href: "/templates", label: "템플릿", icon: MessageSquare },
-    ],
-  },
-  {
-    label: "📅 운영",
-    items: [
-      { href: "/calendar", label: "캘린더", icon: CalendarDays },
-      { href: "/deploy", label: "배포", icon: Send },
-      { href: "/autopilot", label: "AI매니저", icon: Bot },
-      { href: "/workflow", label: "워크플로우", icon: Route },
-    ],
-  },
-  {
-    label: "👥 고객",
-    items: [
-      { href: "/crm", label: "CRM", icon: Users },
-      { href: "/outbound", label: "영업", icon: Target },
-      { href: "/funnel", label: "퍼널", icon: GitBranch },
-      { href: "/intake", label: "인테이크", icon: Users },
     ],
   },
   {
@@ -57,20 +38,32 @@ const NAV_GROUPS = [
     items: [
       { href: "/analytics", label: "경쟁사분석", icon: BarChart2 },
       { href: "/report", label: "리포트", icon: FileText },
+    ],
+  },
+  {
+    label: "👥 고객",
+    items: [
+      { href: "/crm", label: "CRM", icon: Users },
+    ],
+  },
+  {
+    label: "🔜 준비중",
+    items: [
+      { href: "/osmu", label: "OSMU", icon: Layers },
+      { href: "/templates", label: "템플릿", icon: MessageSquare },
+      { href: "/calendar", label: "캘린더", icon: CalendarDays },
+      { href: "/outbound", label: "영업", icon: Target },
       { href: "/revenue", label: "수익", icon: BarChart3 },
       { href: "/simulator", label: "시뮬레이터", icon: Calculator },
-      { href: "/ab-test", label: "AB테스트", icon: FlaskConical },
-      { href: "/portfolio", label: "포트폴리오", icon: Briefcase },
     ],
   },
 ];
 
-// 4탭 메인 네비게이션
 const MAIN_NAV = [
   { href: "/content", label: "콘텐츠", icon: Film },
-  { href: "/customers", label: "고객", icon: Users },
   { href: "/analytics", label: "분석", icon: BarChart2 },
-  { href: "/settings", label: "설정", icon: CalendarDays },
+  { href: "/crm", label: "CRM", icon: Users },
+  { href: "/pricing", label: "요금제", icon: BarChart3 },
 ];
 const MORE_NAV = NAV_GROUPS.flatMap((g) => g.items).filter((item) => !MAIN_NAV.some((m) => m.href === item.href));
 
