@@ -52,17 +52,19 @@ export const chameleonRouter = router({
       const narrationText = captionMatch?.[1] || `${input.productName}, ${input.coreMessage || input.industry}`;
 
       const [thumbnail, bodyImage, narration] = await Promise.all([
-        generateImage(imgPrompt + ", top-down angle, appetizing, warm lighting", { model }).catch(() => null),
-        generateImage(imgPrompt + ", 45 degree angle, lifestyle setting, shallow depth of field", { model }).catch(() => null),
-        generateNarration(narrationText).catch(() => null),
+        generateImage(imgPrompt + ", top-down angle, appetizing, warm lighting", { model }).catch((e) => { console.error("[reels] 이미지1 실패:", (e as Error).message?.slice(0, 50)); return null; }),
+        generateImage(imgPrompt + ", 45 degree angle, lifestyle setting, shallow depth of field", { model }).catch((e) => { console.error("[reels] 이미지2 실패:", (e as Error).message?.slice(0, 50)); return null; }),
+        generateNarration(narrationText).catch((e) => { console.error("[reels] 나레이션 실패:", (e as Error).message?.slice(0, 50)); return null; }),
       ]);
+
+      console.log(`[reels] 결과: img1=${!!thumbnail} img2=${!!bodyImage} narr=${!!narration} videoPrompt=${imgPrompt.slice(0,30)}`);
 
       return {
         content,
         thumbnailUrl: thumbnail?.url || null,
         bodyImageUrl: bodyImage?.url || null,
         narrationUrl: narration,
-        // 영상 프롬프트 (프론트에서 별도 호출용)
+        narrationText,
         videoPrompt: `${imgPrompt}, slow motion, cinematic`,
         type: "reels" as const,
       };
@@ -157,7 +159,15 @@ export const chameleonRouter = router({
       return { content };
     }),
 
-  // 영상 생성 (별도 호출 — Kling V2, 최대 60초)
+  // 나레이션 재생성
+  regenerateNarration: publicProcedure
+    .input(z.object({ text: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      const narration = await generateNarration(input.text);
+      return { narrationUrl: narration };
+    }),
+
+  // 영상 생성 (별도 호출 — Kling V2.5, 최대 60초)
   generateReelsVideo: publicProcedure
     .input(z.object({ prompt: z.string().min(1) }))
     .mutation(async ({ input }) => {

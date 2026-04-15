@@ -97,6 +97,8 @@ export default function ChameleonContentPage() {
   const [bodyImageUrl, setBodyImageUrl] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [narrationUrl, setNarrationUrl] = useState<string | null>(null);
+  const [narrationText, setNarrationText] = useState("");
+  const [videoPromptSaved, setVideoPromptSaved] = useState("");
   const [copiedKey, setCopiedKey] = useState("");
   const [toast, setToast] = useState("");
 
@@ -165,8 +167,10 @@ export default function ChameleonContentPage() {
         if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
         if (reelsRes.bodyImageUrl) setBodyImageUrl(reelsRes.bodyImageUrl);
         if ((reelsRes as any).narrationUrl) setNarrationUrl((reelsRes as any).narrationUrl);
+        if ((reelsRes as any).narrationText) setNarrationText((reelsRes as any).narrationText);
         // 영상 비동기 생성 (별도 호출)
         const videoPrompt = (reelsRes as any).videoPrompt;
+        if (videoPrompt) setVideoPromptSaved(videoPrompt);
         if (videoPrompt) {
           setVideoUrl("loading");
           trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt })
@@ -475,33 +479,54 @@ export default function ChameleonContentPage() {
                 </div>
               )}
 
-              {/* AI 영상 미리보기 (릴스) */}
-              {videoUrl && tab === "reels" && (
+              {/* AI 영상 (릴스) — 성공/로딩/실패 */}
+              {tab === "reels" && result && (
                 <div className="card-luxury shadow-xl overflow-hidden">
-                  <div className="px-5 py-3 border-b border-white/5">
+                  <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between">
                     <h4 className="text-xs font-bold text-white">🎬 AI 영상 (5초)</h4>
+                    {!videoUrl && videoPromptSaved && (
+                      <button onClick={() => {
+                        setVideoUrl("loading");
+                        trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPromptSaved })
+                          .then((v: any) => setVideoUrl(v.videoUrl || null))
+                          .catch(() => setVideoUrl(null));
+                      }} className="text-[10px] px-2 py-1 rounded bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37]/30">재시도</button>
+                    )}
                   </div>
                   <div className="p-4 flex justify-center">
                     {videoUrl === "loading" ? (
-                      <div className="flex flex-col items-center gap-2 py-8">
+                      <div className="flex flex-col items-center gap-2 py-6">
                         <div className="chameleon-spinner" />
-                        <p className="text-[10px] text-slate-400">Kling V2로 영상 생성 중... (30~60초)</p>
+                        <p className="text-[10px] text-slate-400">Kling V2.5로 영상 생성 중... (30~60초)</p>
                       </div>
-                    ) : (
+                    ) : videoUrl ? (
                       <video src={videoUrl} controls autoPlay muted loop className="rounded-xl max-h-80 shadow-lg" />
+                    ) : (
+                      <p className="text-[10px] text-slate-500 py-4">영상 생성 대기 중 (위 [재시도] 클릭)</p>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* AI 나레이션 (릴스) */}
-              {narrationUrl && tab === "reels" && (
+              {/* AI 나레이션 (릴스) — 성공/실패 */}
+              {tab === "reels" && result && (
                 <div className="card-luxury shadow-xl overflow-hidden">
-                  <div className="px-5 py-3 border-b border-white/5">
+                  <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between">
                     <h4 className="text-xs font-bold text-white">🎙️ AI 나레이션</h4>
+                    {!narrationUrl && narrationText && (
+                      <button onClick={() => {
+                        trpc.chameleon.regenerateNarration.mutate({ text: narrationText })
+                          .then((r: any) => setNarrationUrl(r.narrationUrl || null))
+                          .catch(() => {});
+                      }} className="text-[10px] px-2 py-1 rounded bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37]/30">재시도</button>
+                    )}
                   </div>
                   <div className="p-4">
-                    <audio src={narrationUrl} controls className="w-full" />
+                    {narrationUrl ? (
+                      <audio src={narrationUrl} controls className="w-full" />
+                    ) : (
+                      <p className="text-[10px] text-slate-500">나레이션 생성 대기 중 (위 [재시도] 클릭)</p>
+                    )}
                   </div>
                 </div>
               )}
