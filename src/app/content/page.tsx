@@ -487,7 +487,7 @@ export default function ChameleonContentPage() {
               {tab === "reels" && result && (
                 <div className="card-luxury shadow-xl overflow-hidden">
                   <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-white">🎬 AI 영상 (5초)</h4>
+                    <h4 className="text-xs font-bold text-white">🎬 AI 영상 ({reelsDuration}초)</h4>
                     {!videoUrl && videoPromptSaved && (
                       <button onClick={() => {
                         setVideoUrl("loading");
