@@ -114,6 +114,7 @@ export default function ChameleonContentPage() {
   const [reelsProduct, setReelsProduct] = useState("");
   const [reelsMessage, setReelsMessage] = useState("");
   const [reelsDuration, setReelsDuration] = useState("10");
+  const [reelsVideoModel, setReelsVideoModel] = useState("veo");
 
   // 상세페이지
   const [detailPlatform, setDetailPlatform] = useState("");
@@ -176,7 +177,7 @@ export default function ChameleonContentPage() {
         if (videoPrompt) setVideoPromptSaved(videoPrompt);
         if (videoPrompt) {
           setVideoUrl("loading");
-          trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt, duration: videoDuration, imageUrl: reelsRes.thumbnailUrl || undefined })
+          trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt, duration: videoDuration, imageUrl: reelsRes.thumbnailUrl || undefined, model: reelsVideoModel as any })
             .then((v: any) => setVideoUrl(v.videoUrl || null))
             .catch(() => setVideoUrl(null));
         }
@@ -358,6 +359,7 @@ export default function ChameleonContentPage() {
             product={reelsProduct} setProduct={setReelsProduct}
             message={reelsMessage} setMessage={setReelsMessage}
             reelsDuration={reelsDuration} setReelsDuration={setReelsDuration}
+            reelsVideoModel={reelsVideoModel} setReelsVideoModel={setReelsVideoModel}
           />
         )}
         {tab === "detail" && (
@@ -491,7 +493,7 @@ export default function ChameleonContentPage() {
                     {!videoUrl && videoPromptSaved && (
                       <button onClick={() => {
                         setVideoUrl("loading");
-                        trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPromptSaved, duration: reelsDuration, imageUrl: thumbnailUrl || undefined })
+                        trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPromptSaved, duration: reelsDuration, imageUrl: thumbnailUrl || undefined, model: reelsVideoModel as any })
                           .then((v: any) => setVideoUrl(v.videoUrl || null))
                           .catch(() => setVideoUrl(null));
                       }} className="text-[10px] px-2 py-1 rounded bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37]/30">재시도</button>
@@ -719,13 +721,14 @@ function TextInput({
 /* ── 탭 1: 릴스/숏폼 ── */
 function ReelsForm({
   industry, setIndustry, style, setStyle, product, setProduct, message, setMessage,
-  reelsDuration, setReelsDuration,
+  reelsDuration, setReelsDuration, reelsVideoModel, setReelsVideoModel,
 }: {
   industry: string; setIndustry: (v: string) => void;
   style: string; setStyle: (v: string) => void;
   product: string; setProduct: (v: string) => void;
   message: string; setMessage: (v: string) => void;
   reelsDuration: string; setReelsDuration: (v: string) => void;
+  reelsVideoModel: string; setReelsVideoModel: (v: string) => void;
 }) {
   return (
     <div className="space-y-5">
@@ -753,9 +756,19 @@ function ReelsForm({
       <div>
         <SectionLabel>영상 길이</SectionLabel>
         <div className="flex gap-2">
-          {[{k:"5",l:"5초 (짧은)"},{k:"10",l:"10초 (추천)"}].map(o => (
+          {[{k:"5",l:"5초"},{k:"10",l:"10초"}].map(o => (
             <button key={o.k} onClick={() => setReelsDuration(o.k)}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-medium transition ${reelsDuration === o.k ? "chameleon-bg text-black" : "bg-white/5 text-slate-400 border border-white/10"}`}
+            >{o.l}</button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <SectionLabel>영상 모델</SectionLabel>
+        <div className="flex gap-2 flex-wrap">
+          {[{k:"veo",l:"🏆 Veo 3.1"},{k:"seedance",l:"⚡ Seedance"},{k:"kling3",l:"💰 Kling 3"}].map(o => (
+            <button key={o.k} onClick={() => setReelsVideoModel(o.k)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-medium transition ${reelsVideoModel === o.k ? "chameleon-bg text-black" : "bg-white/5 text-slate-400 border border-white/10"}`}
             >{o.l}</button>
           ))}
         </div>

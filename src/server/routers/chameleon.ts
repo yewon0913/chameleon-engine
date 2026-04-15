@@ -2,7 +2,7 @@ import { z } from "zod";
 import { router, publicProcedure } from "../trpc/init";
 import { chatWithClaude } from "@/lib/claude-api";
 import { generateImage, selectImageModel } from "@/lib/image-generator";
-import { generateVideo, generateVideoFromImage } from "@/lib/video-generator";
+import { generateVideo, generateVideoFromImage, type VideoModel } from "@/lib/video-generator";
 import { generateNarration } from "@/lib/elevenlabs";
 import { naverLocalSearch } from "@/lib/naver-api";
 import { kakaoKeywordSearch } from "@/lib/kakao-api";
@@ -179,26 +179,24 @@ export const chameleonRouter = router({
       return { narrationUrl: narration };
     }),
 
-  // 영상 생성 — image-to-video 우선 (퀄리티 UP!)
+  // 영상 생성 — 멀티모델 폴백 (Veo→Seedance→Kling)
   generateReelsVideo: publicProcedure
     .input(z.object({
       prompt: z.string().min(1),
       duration: z.string().optional(),
       imageUrl: z.string().optional(),
+      model: z.enum(["veo", "seedance", "kling3", "kling25"]).optional(),
     }))
     .mutation(async ({ input }) => {
-      const klingDuration = (input.duration === "5") ? "5" : "10";
+      const dur = input.duration || "10";
+      const m = input.model as VideoModel | undefined;
 
       if (input.imageUrl) {
-        // image-to-video (이미지 기반 → 퀄리티 훨씬 좋음!)
-        console.log(`[video] image-to-video: duration=${klingDuration}`);
-        const video = await generateVideoFromImage(input.imageUrl, input.prompt, klingDuration as "5" | "10");
+        const video = await generateVideoFromImage(input.imageUrl, input.prompt, dur, m);
         return { videoUrl: video?.url || null };
       }
 
-      // text-to-video (fallback)
-      console.log(`[video] text-to-video: duration=${klingDuration}`);
-      const video = await generateVideo(input.prompt, { duration: klingDuration, aspectRatio: "9:16" });
+      const video = await generateVideo(input.prompt, { duration: dur, aspectRatio: "9:16", model: m });
       return { videoUrl: video?.url || null };
     }),
 
