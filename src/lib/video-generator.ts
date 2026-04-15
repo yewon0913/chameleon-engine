@@ -5,14 +5,13 @@ interface VideoResult { url: string; duration: number }
 export type VideoModel = "veo" | "seedance" | "kling3" | "kling25";
 
 const MODELS: Record<VideoModel, { t2v: string; i2v: string }> = {
-  veo:      { t2v: "fal-ai/veo3.1/fast/text-to-video",                  i2v: "fal-ai/veo3.1/fast/image-to-video" },
-  seedance: { t2v: "fal-ai/seedance-2.0/text-to-video",                 i2v: "fal-ai/seedance-2.0/image-to-video" },
+  veo:      { t2v: "fal-ai/veo3.1/fast",                                  i2v: "fal-ai/veo3.1/fast/image-to-video" },
+  seedance: { t2v: "fal-ai/seedance-2.0",                                i2v: "fal-ai/seedance-2.0/image-to-video" },
   kling3:   { t2v: "fal-ai/kling-video/v2.5-turbo/pro/text-to-video",   i2v: "fal-ai/kling-video/v2.5-turbo/pro/image-to-video" },
   kling25:  { t2v: "fal-ai/kling-video/v2.5-turbo/pro/text-to-video",   i2v: "fal-ai/kling-video/v2.5-turbo/pro/image-to-video" },
 };
 
-// Veo/Seedance=Kling 다음 폴백
-const FALLBACK: VideoModel[] = ["kling3", "kling25"];
+const FALLBACK: VideoModel[] = ["veo", "kling3", "kling25"];
 
 function buildInput(model: VideoModel, base: Record<string, unknown>): Record<string, unknown> {
   if (model === "veo") {
