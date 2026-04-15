@@ -6,6 +6,8 @@ import { generateVideo } from "@/lib/video-generator";
 import { generateNarration } from "@/lib/elevenlabs";
 import { naverLocalSearch } from "@/lib/naver-api";
 import { kakaoKeywordSearch } from "@/lib/kakao-api";
+import { getTrend } from "@/lib/perplexity";
+import { analyzeCompetitors } from "@/lib/youtube-analyzer";
 import {
   buildReelsPrompt,
   buildDetailPagePrompt,
@@ -152,5 +154,29 @@ export const chameleonRouter = router({
         [{ role: "user", content: prompt }],
       );
       return { content };
+    }),
+
+  // 업종별 트렌드 분석 (Perplexity)
+  getTrend: publicProcedure
+    .input(z.object({ industry: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const trend = await getTrend(input.industry);
+      return { trend };
+    }),
+
+  // 경쟁 영상 분석 (YouTube)
+  getCompetitors: publicProcedure
+    .input(z.object({ keyword: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const videos = await analyzeCompetitors(input.keyword);
+      return { videos };
+    }),
+
+  // 상권 분석 (카카오)
+  analyzeArea: publicProcedure
+    .input(z.object({ keyword: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const places = await kakaoKeywordSearch(input.keyword, 10);
+      return { places, total: places.length };
     }),
 });
