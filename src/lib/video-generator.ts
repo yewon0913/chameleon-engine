@@ -18,7 +18,7 @@ export async function generateVideo(
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await (fal as any).subscribe(
-      "fal-ai/kling-video/v2.5/standard/text-to-video",
+      "fal-ai/kling-video/v2.5-turbo/pro/text-to-video",
       { input, logs: true }
     );
     const video = result?.data?.video || result?.video;
@@ -40,7 +40,7 @@ export async function generateVideoFromImage(
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await (fal as any).subscribe(
-      "fal-ai/kling-video/v2.5/standard/image-to-video",
+      "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
       {
         input: { prompt, image_url: imageUrl, duration, aspect_ratio: "9:16" },
         logs: true,
