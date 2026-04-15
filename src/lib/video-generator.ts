@@ -10,7 +10,7 @@ export async function generateVideo(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const input: any = { prompt, duration: options?.duration || "5", aspect_ratio: options?.aspectRatio || "16:9" };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result: any = await (fal as any).subscribe("fal-ai/kling-video/v2/standard/text-to-video", { input, logs: true });
+    const result: any = await (fal as any).subscribe("fal-ai/kling-video/v1/standard/text-to-video", { input, logs: true });
     const video = result?.data?.video || result?.video;
     return video ? { url: video.url, duration: parseInt(options?.duration || "5") } : null;
   } catch (e) { console.error("Video gen error:", e); return null; }
