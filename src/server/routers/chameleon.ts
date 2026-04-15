@@ -25,10 +25,12 @@ export const chameleonRouter = router({
         videoStyle: z.string().min(1),
         productName: z.string().min(1),
         coreMessage: z.string().optional(),
+        extraRequest: z.string().optional(),
       }),
     )
     .mutation(async ({ input }) => {
-      const prompt = buildReelsPrompt(input);
+      const basePrompt = buildReelsPrompt(input);
+      const prompt = input.extraRequest ? `${basePrompt}\n\n[고객 추가 요구사항] ${input.extraRequest}` : basePrompt;
 
       // 1단계: AI가 최적 이미지 프롬프트 생성
       const [content, imgPromptRaw] = await Promise.all([

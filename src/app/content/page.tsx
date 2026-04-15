@@ -100,6 +100,12 @@ export default function ChameleonContentPage() {
   const [copiedKey, setCopiedKey] = useState("");
   const [toast, setToast] = useState("");
 
+  // 공통: 추가 요구사항
+  const [extraRequest, setExtraRequest] = useState("");
+  // 편집 모드
+  const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+
   // 릴스
   const [reelsIndustry, setReelsIndustry] = useState("");
   const [reelsStyle, setReelsStyle] = useState("");
@@ -153,7 +159,8 @@ export default function ChameleonContentPage() {
           videoStyle: VIDEO_STYLES.find((s) => s.key === reelsStyle)?.label || reelsStyle,
           productName: reelsProduct,
           coreMessage: reelsMessage || undefined,
-        });
+          extraRequest: extraRequest || undefined,
+        } as any);
         res = reelsRes;
         if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
         if (reelsRes.bodyImageUrl) setBodyImageUrl(reelsRes.bodyImageUrl);
@@ -378,6 +385,18 @@ export default function ChameleonContentPage() {
           />
         )}
 
+        {/* 추가 요구사항 (선택) */}
+        <div className="mt-4">
+          <label className="text-[10px] text-slate-400 mb-1 block">💬 추가 요구사항 (선택)</label>
+          <input
+            type="text"
+            value={extraRequest}
+            onChange={(e) => setExtraRequest(e.target.value)}
+            placeholder="예: 가격 강조, 20대 여성 타겟, 할인 이벤트 포함"
+            className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-[#D4AF37]/50 focus:outline-none"
+          />
+        </div>
+
         {/* Generate Button */}
         <button
           onClick={handleGenerate}
@@ -509,11 +528,29 @@ export default function ChameleonContentPage() {
                           {copiedKey === btn.key ? <><Check size={10} /> 복사 완료!</> : <><Copy size={10} /> {btn.label}</>}
                         </button>
                       ))}
+                      <button
+                        onClick={() => { setEditingSection(section.key); setEditText(section.body); }}
+                        className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition"
+                      >✏️ 수정</button>
+                      <button
+                        onClick={() => { const sections = parseSections(result); const newResult = sections.filter(s => s.key !== section.key).map(s => `### ${s.heading}\n${s.body}`).join("\n\n"); setResult(newResult); }}
+                        className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-medium bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"
+                      >🗑️</button>
                     </div>
                   </div>
-                  <div className="px-5 py-4 prose prose-invert prose-sm max-w-none prose-headings:text-white prose-headings:font-bold prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-h3:text-sm prose-h3:mt-4 prose-h3:mb-1 prose-h4:text-xs prose-h4:mt-3 prose-h4:mb-1 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-[#F5D061] prose-code:text-[#F5D061] prose-code:bg-[#F5D061]/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-hr:my-4 prose-hr:border-white/10">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.body}</ReactMarkdown>
-                  </div>
+                  {editingSection === section.key ? (
+                    <div className="px-5 py-4">
+                      <textarea value={editText} onChange={(e) => setEditText(e.target.value)} className="w-full min-h-[120px] bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-white font-mono resize-y focus:border-[#D4AF37]/50 focus:outline-none" />
+                      <div className="flex gap-2 mt-2">
+                        <button onClick={() => { const sections = parseSections(result); const newResult = sections.map(s => s.key === section.key ? `### ${s.heading}\n${editText}` : `### ${s.heading}\n${s.body}`).join("\n\n"); setResult(newResult); setEditingSection(null); }} className="px-3 py-1.5 text-[10px] font-bold chameleon-bg text-black rounded-lg">저장</button>
+                        <button onClick={() => setEditingSection(null)} className="px-3 py-1.5 text-[10px] text-slate-400 border border-white/10 rounded-lg">취소</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="px-5 py-4 prose prose-invert prose-sm max-w-none prose-headings:text-white prose-headings:font-bold prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-h3:text-sm prose-h3:mt-4 prose-h3:mb-1 prose-h4:text-xs prose-h4:mt-3 prose-h4:mb-1 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-[#F5D061] prose-code:text-[#F5D061] prose-code:bg-[#F5D061]/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-hr:my-4 prose-hr:border-white/10">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.body}</ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               ))}
             </>
