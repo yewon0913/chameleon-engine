@@ -164,8 +164,15 @@ export default function ChameleonContentPage() {
         res = reelsRes;
         if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
         if (reelsRes.bodyImageUrl) setBodyImageUrl(reelsRes.bodyImageUrl);
-        if ((reelsRes as any).videoUrl) setVideoUrl((reelsRes as any).videoUrl);
         if ((reelsRes as any).narrationUrl) setNarrationUrl((reelsRes as any).narrationUrl);
+        // 영상 비동기 생성 (별도 호출)
+        const videoPrompt = (reelsRes as any).videoPrompt;
+        if (videoPrompt) {
+          setVideoUrl("loading");
+          trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt })
+            .then((v: any) => setVideoUrl(v.videoUrl || null))
+            .catch(() => setVideoUrl(null));
+        }
       } else if (tab === "detail") {
         res = await trpc.chameleon.generateDetailPage.mutate({
           platform: PLATFORMS.find((p) => p.key === detailPlatform)?.label || detailPlatform,
@@ -475,7 +482,14 @@ export default function ChameleonContentPage() {
                     <h4 className="text-xs font-bold text-white">🎬 AI 영상 (5초)</h4>
                   </div>
                   <div className="p-4 flex justify-center">
-                    <video src={videoUrl} controls autoPlay muted loop className="rounded-xl max-h-80 shadow-lg" />
+                    {videoUrl === "loading" ? (
+                      <div className="flex flex-col items-center gap-2 py-8">
+                        <div className="chameleon-spinner" />
+                        <p className="text-[10px] text-slate-400">Kling V2로 영상 생성 중... (30~60초)</p>
+                      </div>
+                    ) : (
+                      <video src={videoUrl} controls autoPlay muted loop className="rounded-xl max-h-80 shadow-lg" />
+                    )}
                   </div>
                 </div>
               )}

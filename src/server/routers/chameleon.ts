@@ -47,15 +47,13 @@ export const chameleonRouter = router({
       const imgPrompt = (imgPromptRaw || `${input.productName} professional photography, 4K`).trim();
       const model = selectImageModel(input.industry);
 
-      // 2단계: 이미지 2장 + 영상 1개 + 나레이션 동시 생성
-      // 나레이션용 캡션 추출 (마크다운에서 첫 3문장)
+      // 이미지 2장 + 나레이션 (50초 이내)
       const captionMatch = content.match(/캡션[:\s]*(.+?)(?:\n|$)/i) || content.match(/문구[:\s]*(.+?)(?:\n|$)/i);
       const narrationText = captionMatch?.[1] || `${input.productName}, ${input.coreMessage || input.industry}`;
 
-      const [thumbnail, bodyImage, video, narration] = await Promise.all([
+      const [thumbnail, bodyImage, narration] = await Promise.all([
         generateImage(imgPrompt + ", top-down angle, appetizing, warm lighting", { model }).catch(() => null),
         generateImage(imgPrompt + ", 45 degree angle, lifestyle setting, shallow depth of field", { model }).catch(() => null),
-        generateVideo(`${imgPrompt}, slow motion, cinematic`, { duration: "5", aspectRatio: "9:16" }).catch(() => null),
         generateNarration(narrationText).catch(() => null),
       ]);
 
@@ -63,8 +61,9 @@ export const chameleonRouter = router({
         content,
         thumbnailUrl: thumbnail?.url || null,
         bodyImageUrl: bodyImage?.url || null,
-        videoUrl: video?.url || null,
         narrationUrl: narration,
+        // 영상 프롬프트 (프론트에서 별도 호출용)
+        videoPrompt: `${imgPrompt}, slow motion, cinematic`,
         type: "reels" as const,
       };
     }),
@@ -156,6 +155,14 @@ export const chameleonRouter = router({
         [{ role: "user", content: prompt }],
       );
       return { content };
+    }),
+
+  // 영상 생성 (별도 호출 — Kling V2, 최대 60초)
+  generateReelsVideo: publicProcedure
+    .input(z.object({ prompt: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      const video = await generateVideo(input.prompt, { duration: "5", aspectRatio: "9:16" });
+      return { videoUrl: video?.url || null };
     }),
 
   // 업종별 트렌드 분석 (Perplexity)
