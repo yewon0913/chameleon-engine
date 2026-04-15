@@ -93,6 +93,7 @@ export default function ChameleonContentPage() {
   const [tab, setTab] = useState<TabKey>("reels");
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState("");
   const [toast, setToast] = useState("");
 
@@ -135,17 +136,20 @@ export default function ChameleonContentPage() {
   async function handleGenerate() {
     setGenerating(true);
     setResult("");
+    setThumbnailUrl(null);
     setCopiedKey("");
     setToast("");
     try {
-      let res: { content: string };
+      let res: { content: string; thumbnailUrl?: string | null };
       if (tab === "reels") {
-        res = await trpc.chameleon.generateReels.mutate({
+        const reelsRes = await trpc.chameleon.generateReels.mutate({
           industry: reelsIndustry,
           videoStyle: VIDEO_STYLES.find((s) => s.key === reelsStyle)?.label || reelsStyle,
           productName: reelsProduct,
           coreMessage: reelsMessage || undefined,
         });
+        res = reelsRes;
+        if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
       } else if (tab === "detail") {
         res = await trpc.chameleon.generateDetailPage.mutate({
           platform: PLATFORMS.find((p) => p.key === detailPlatform)?.label || detailPlatform,
@@ -302,7 +306,7 @@ export default function ChameleonContentPage() {
         {TABS.map((t) => (
           <button
             key={t.key}
-            onClick={() => { setTab(t.key); setResult(""); setCopiedKey(""); setToast(""); setHashResult(null); }}
+            onClick={() => { setTab(t.key); setResult(""); setThumbnailUrl(null); setCopiedKey(""); setToast(""); setHashResult(null); }}
             className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition-all ${
               tab === t.key
                 ? "chameleon-gradient text-white shadow-lg"
@@ -410,6 +414,35 @@ export default function ChameleonContentPage() {
                   </button>
                 </div>
               </div>
+
+              {/* 썸네일 이미지 (릴스) */}
+              {thumbnailUrl && tab === "reels" && (
+                <div className="card-luxury shadow-xl overflow-hidden">
+                  <div className="px-5 py-3 border-b border-white/5">
+                    <h4 className="text-xs font-bold text-white">🖼️ AI 썸네일</h4>
+                  </div>
+                  <div className="p-4 flex justify-center">
+                    <img src={thumbnailUrl} alt="릴스 썸네일" className="rounded-xl max-h-80 object-cover shadow-lg" />
+                  </div>
+                </div>
+              )}
+
+              {/* 상세페이지 HTML 미리보기 */}
+              {tab === "detail" && result.includes("<") && (
+                <div className="card-luxury shadow-xl overflow-hidden">
+                  <div className="px-5 py-3 border-b border-white/5">
+                    <h4 className="text-xs font-bold text-white">🖥️ HTML 미리보기</h4>
+                  </div>
+                  <div className="bg-white rounded-b-xl">
+                    <iframe
+                      srcDoc={result.includes("<div") || result.includes("<section") ? result.replace(/```html|```/g, "") : ""}
+                      className="w-full min-h-[500px] border-0"
+                      sandbox="allow-same-origin"
+                      title="상세페이지 미리보기"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Section cards */}
               {parseSections(result).map((section) => (

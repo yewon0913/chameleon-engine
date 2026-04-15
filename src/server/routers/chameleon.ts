@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc/init";
 import { chatWithClaude } from "@/lib/claude-api";
+import { generateImageFast } from "@/lib/image-generator";
 import {
   buildReelsPrompt,
   buildDetailPagePrompt,
@@ -10,7 +11,7 @@ import {
 } from "@/lib/chameleon-prompts";
 
 export const chameleonRouter = router({
-  // 릴스/숏폼 생성
+  // 릴스/숏폼 생성 + 썸네일 이미지!
   generateReels: publicProcedure
     .input(
       z.object({
@@ -22,14 +23,26 @@ export const chameleonRouter = router({
     )
     .mutation(async ({ input }) => {
       const prompt = buildReelsPrompt(input);
-      const content = await chatWithClaude(
-        "당신은 SNS 숏폼 콘텐츠 전문 프로듀서입니다. 영상 프롬프트는 Scene/Camera/Motion/Lighting 4요소를 반드시 포함하세요.",
-        [{ role: "user", content: prompt }],
-      );
-      return { content };
+
+      // 텍스트 + 이미지 동시 생성!
+      const [content, thumbnail] = await Promise.all([
+        chatWithClaude(
+          "당신은 SNS 숏폼 콘텐츠 전문 프로듀서입니다. 영상 프롬프트는 Scene/Camera/Motion/Lighting 4요소를 반드시 포함하세요.",
+          [{ role: "user", content: prompt }],
+        ),
+        generateImageFast(
+          `${input.productName} ${input.industry} professional ${input.videoStyle} photography, cinematic lighting, 4K`
+        ).catch(() => null),
+      ]);
+
+      return {
+        content,
+        thumbnailUrl: thumbnail?.url || null,
+        type: "reels" as const,
+      };
     }),
 
-  // 상세페이지 생성
+  // 상세페이지 생성 (HTML 포함!)
   generateDetailPage: publicProcedure
     .input(
       z.object({
@@ -46,7 +59,7 @@ export const chameleonRouter = router({
         "당신은 상세페이지 전문 카피라이터이자 웹 디자이너입니다. HTML+인라인CSS 코드도 제공하세요.",
         [{ role: "user", content: prompt }],
       );
-      return { content };
+      return { content, type: "detail" as const };
     }),
 
   // 블로그 생성
