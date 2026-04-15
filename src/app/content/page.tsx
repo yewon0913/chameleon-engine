@@ -96,6 +96,7 @@ export default function ChameleonContentPage() {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [bodyImageUrl, setBodyImageUrl] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [narrationUrl, setNarrationUrl] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState("");
   const [toast, setToast] = useState("");
 
@@ -141,6 +142,7 @@ export default function ChameleonContentPage() {
     setThumbnailUrl(null);
     setBodyImageUrl(null);
     setVideoUrl(null);
+    setNarrationUrl(null);
     setCopiedKey("");
     setToast("");
     try {
@@ -156,6 +158,7 @@ export default function ChameleonContentPage() {
         if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
         if (reelsRes.bodyImageUrl) setBodyImageUrl(reelsRes.bodyImageUrl);
         if ((reelsRes as any).videoUrl) setVideoUrl((reelsRes as any).videoUrl);
+        if ((reelsRes as any).narrationUrl) setNarrationUrl((reelsRes as any).narrationUrl);
       } else if (tab === "detail") {
         res = await trpc.chameleon.generateDetailPage.mutate({
           platform: PLATFORMS.find((p) => p.key === detailPlatform)?.label || detailPlatform,
@@ -454,6 +457,18 @@ export default function ChameleonContentPage() {
                   </div>
                   <div className="p-4 flex justify-center">
                     <video src={videoUrl} controls autoPlay muted loop className="rounded-xl max-h-80 shadow-lg" />
+                  </div>
+                </div>
+              )}
+
+              {/* AI 나레이션 (릴스) */}
+              {narrationUrl && tab === "reels" && (
+                <div className="card-luxury shadow-xl overflow-hidden">
+                  <div className="px-5 py-3 border-b border-white/5">
+                    <h4 className="text-xs font-bold text-white">🎙️ AI 나레이션</h4>
+                  </div>
+                  <div className="p-4">
+                    <audio src={narrationUrl} controls className="w-full" />
                   </div>
                 </div>
               )}

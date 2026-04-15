@@ -1,8 +1,11 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc/init";
 import { chatWithClaude } from "@/lib/claude-api";
-import { generateImage, generateImageFast, selectImageModel } from "@/lib/image-generator";
+import { generateImage, selectImageModel } from "@/lib/image-generator";
 import { generateVideo } from "@/lib/video-generator";
+import { generateNarration } from "@/lib/elevenlabs";
+import { naverLocalSearch } from "@/lib/naver-api";
+import { kakaoKeywordSearch } from "@/lib/kakao-api";
 import {
   buildReelsPrompt,
   buildDetailPagePrompt,
@@ -40,11 +43,16 @@ export const chameleonRouter = router({
       const imgPrompt = (imgPromptRaw || `${input.productName} professional photography, 4K`).trim();
       const model = selectImageModel(input.industry);
 
-      // 2단계: 이미지 2장 + 영상 1개 동시 생성
-      const [thumbnail, bodyImage, video] = await Promise.all([
+      // 2단계: 이미지 2장 + 영상 1개 + 나레이션 동시 생성
+      // 나레이션용 캡션 추출 (마크다운에서 첫 3문장)
+      const captionMatch = content.match(/캡션[:\s]*(.+?)(?:\n|$)/i) || content.match(/문구[:\s]*(.+?)(?:\n|$)/i);
+      const narrationText = captionMatch?.[1] || `${input.productName}, ${input.coreMessage || input.industry}`;
+
+      const [thumbnail, bodyImage, video, narration] = await Promise.all([
         generateImage(imgPrompt + ", top-down angle, appetizing, warm lighting", { model }).catch(() => null),
         generateImage(imgPrompt + ", 45 degree angle, lifestyle setting, shallow depth of field", { model }).catch(() => null),
         generateVideo(`${imgPrompt}, slow motion, cinematic`, { duration: "5", aspectRatio: "9:16" }).catch(() => null),
+        generateNarration(narrationText).catch(() => null),
       ]);
 
       return {
@@ -52,6 +60,7 @@ export const chameleonRouter = router({
         thumbnailUrl: thumbnail?.url || null,
         bodyImageUrl: bodyImage?.url || null,
         videoUrl: video?.url || null,
+        narrationUrl: narration,
         type: "reels" as const,
       };
     }),
@@ -76,7 +85,7 @@ export const chameleonRouter = router({
       return { content, type: "detail" as const };
     }),
 
-  // 블로그 생성
+  // 블로그 생성 + 네이버 SEO 분석
   generateBlog: publicProcedure
     .input(
       z.object({
@@ -87,12 +96,25 @@ export const chameleonRouter = router({
       }),
     )
     .mutation(async ({ input }) => {
-      const prompt = buildBlogPrompt(input);
+      // 네이버 검색으로 경쟁 분석 (병렬)
+      const [prompt, naverResults] = await Promise.all([
+        Promise.resolve(buildBlogPrompt(input)),
+        naverLocalSearch(input.topic, 5).catch(() => []),
+      ]);
+
+      const seoContext = naverResults.length > 0
+        ? `\n\n[네이버 상위 글 참고]\n${naverResults.map((r, i) => `${i + 1}. ${r.title}`).join("\n")}\n위 글보다 더 유용하고 구체적으로 작성하세요.`
+        : "";
+
       const content = await chatWithClaude(
         "당신은 SEO 전문 블로그 작성자입니다. 플랫폼별 최적화된 콘텐츠를 작성하세요.",
-        [{ role: "user", content: prompt }],
+        [{ role: "user", content: prompt + seoContext }],
       );
-      return { content };
+
+      return {
+        content,
+        seoData: naverResults.length > 0 ? { competitors: naverResults.length, topTitles: naverResults.map((r) => r.title) } : null,
+      };
     }),
 
   // 카드뉴스 생성
