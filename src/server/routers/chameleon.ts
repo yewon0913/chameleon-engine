@@ -2,7 +2,7 @@ import { z } from "zod";
 import { router, publicProcedure } from "../trpc/init";
 import { chatWithClaude } from "@/lib/claude-api";
 import { generateImage, selectImageModel } from "@/lib/image-generator";
-import { generateVideo } from "@/lib/video-generator";
+import { generateVideo, generateVideoFromImage } from "@/lib/video-generator";
 import { generateNarration } from "@/lib/elevenlabs";
 import { naverLocalSearch } from "@/lib/naver-api";
 import { kakaoKeywordSearch } from "@/lib/kakao-api";
@@ -179,13 +179,25 @@ export const chameleonRouter = router({
       return { narrationUrl: narration };
     }),
 
-  // 영상 생성 (별도 호출 — Kling V2.5, 최대 60초)
+  // 영상 생성 — image-to-video 우선 (퀄리티 UP!)
   generateReelsVideo: publicProcedure
-    .input(z.object({ prompt: z.string().min(1), duration: z.string().optional() }))
+    .input(z.object({
+      prompt: z.string().min(1),
+      duration: z.string().optional(),
+      imageUrl: z.string().optional(),
+    }))
     .mutation(async ({ input }) => {
-      // Kling은 5 또는 10만 지원. 15/30은 10으로 매핑 (가장 긴 옵션)
       const klingDuration = (input.duration === "5") ? "5" : "10";
-      console.log(`[video] Kling 호출: duration=${klingDuration} (요청: ${input.duration})`);
+
+      if (input.imageUrl) {
+        // image-to-video (이미지 기반 → 퀄리티 훨씬 좋음!)
+        console.log(`[video] image-to-video: duration=${klingDuration}`);
+        const video = await generateVideoFromImage(input.imageUrl, input.prompt, klingDuration as "5" | "10");
+        return { videoUrl: video?.url || null };
+      }
+
+      // text-to-video (fallback)
+      console.log(`[video] text-to-video: duration=${klingDuration}`);
       const video = await generateVideo(input.prompt, { duration: klingDuration, aspectRatio: "9:16" });
       return { videoUrl: video?.url || null };
     }),

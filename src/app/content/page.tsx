@@ -176,7 +176,7 @@ export default function ChameleonContentPage() {
         if (videoPrompt) setVideoPromptSaved(videoPrompt);
         if (videoPrompt) {
           setVideoUrl("loading");
-          trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt, duration: videoDuration })
+          trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt, duration: videoDuration, imageUrl: reelsRes.thumbnailUrl || undefined })
             .then((v: any) => setVideoUrl(v.videoUrl || null))
             .catch(() => setVideoUrl(null));
         }
@@ -491,7 +491,7 @@ export default function ChameleonContentPage() {
                     {!videoUrl && videoPromptSaved && (
                       <button onClick={() => {
                         setVideoUrl("loading");
-                        trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPromptSaved, duration: reelsDuration })
+                        trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPromptSaved, duration: reelsDuration, imageUrl: thumbnailUrl || undefined })
                           .then((v: any) => setVideoUrl(v.videoUrl || null))
                           .catch(() => setVideoUrl(null));
                       }} className="text-[10px] px-2 py-1 rounded bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37]/30">재시도</button>
