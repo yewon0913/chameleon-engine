@@ -26,6 +26,7 @@ export const chameleonRouter = router({
         productName: z.string().min(1),
         coreMessage: z.string().optional(),
         extraRequest: z.string().optional(),
+        duration: z.enum(["5", "10", "15", "30"]).optional(),
       }),
     )
     .mutation(async ({ input }) => {
@@ -66,6 +67,7 @@ export const chameleonRouter = router({
         narrationUrl: narration,
         narrationText,
         videoPrompt: `${imgPrompt}, slow motion, cinematic`,
+        videoDuration: input.duration || "5",
         type: "reels" as const,
       };
     }),

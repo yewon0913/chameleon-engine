@@ -113,6 +113,7 @@ export default function ChameleonContentPage() {
   const [reelsStyle, setReelsStyle] = useState("");
   const [reelsProduct, setReelsProduct] = useState("");
   const [reelsMessage, setReelsMessage] = useState("");
+  const [reelsDuration, setReelsDuration] = useState("5");
 
   // 상세페이지
   const [detailPlatform, setDetailPlatform] = useState("");
@@ -162,6 +163,7 @@ export default function ChameleonContentPage() {
           productName: reelsProduct,
           coreMessage: reelsMessage || undefined,
           extraRequest: extraRequest || undefined,
+          duration: reelsDuration || "5",
         } as any);
         res = reelsRes;
         if (reelsRes.thumbnailUrl) setThumbnailUrl(reelsRes.thumbnailUrl);
@@ -170,6 +172,7 @@ export default function ChameleonContentPage() {
         if ((reelsRes as any).narrationText) setNarrationText((reelsRes as any).narrationText);
         // 영상 비동기 생성 (별도 호출)
         const videoPrompt = (reelsRes as any).videoPrompt;
+        const videoDuration = (reelsRes as any).videoDuration || "5";
         if (videoPrompt) setVideoPromptSaved(videoPrompt);
         if (videoPrompt) {
           setVideoUrl("loading");
@@ -354,6 +357,7 @@ export default function ChameleonContentPage() {
             style={reelsStyle} setStyle={setReelsStyle}
             product={reelsProduct} setProduct={setReelsProduct}
             message={reelsMessage} setMessage={setReelsMessage}
+            reelsDuration={reelsDuration} setReelsDuration={setReelsDuration}
           />
         )}
         {tab === "detail" && (
@@ -715,11 +719,13 @@ function TextInput({
 /* ── 탭 1: 릴스/숏폼 ── */
 function ReelsForm({
   industry, setIndustry, style, setStyle, product, setProduct, message, setMessage,
+  reelsDuration, setReelsDuration,
 }: {
   industry: string; setIndustry: (v: string) => void;
   style: string; setStyle: (v: string) => void;
   product: string; setProduct: (v: string) => void;
   message: string; setMessage: (v: string) => void;
+  reelsDuration: string; setReelsDuration: (v: string) => void;
 }) {
   return (
     <div className="space-y-5">
@@ -743,6 +749,16 @@ function ReelsForm({
       <div>
         <SectionLabel>제품/서비스명 *</SectionLabel>
         <TextInput value={product} onChange={setProduct} placeholder="예: 수제 아메리카노, 피부관리 패키지" />
+      </div>
+      <div>
+        <SectionLabel>영상 길이</SectionLabel>
+        <div className="flex gap-2">
+          {[{k:"5",l:"5초 (썸네일)"},{k:"10",l:"10초 (숏폼)"},{k:"15",l:"15초"},{k:"30",l:"30초 (풀)"}].map(o => (
+            <button key={o.k} onClick={() => setReelsDuration(o.k)}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-medium transition ${reelsDuration === o.k ? "chameleon-bg text-black" : "bg-white/5 text-slate-400 border border-white/10"}`}
+            >{o.l}</button>
+          ))}
+        </div>
       </div>
       <div>
         <SectionLabel>핵심 메시지 (선택)</SectionLabel>
