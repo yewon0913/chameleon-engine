@@ -7,7 +7,7 @@ interface VideoResult { url: string; duration: number }
  */
 export async function generateVideo(
   prompt: string,
-  options?: { duration?: "5" | "10"; aspectRatio?: "16:9" | "9:16" | "1:1" },
+  options?: { duration?: string; aspectRatio?: "16:9" | "9:16" | "1:1" },
 ): Promise<VideoResult | null> {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -27,7 +27,10 @@ export async function generateNarration(
       }
     );
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[ElevenLabs] HTTP ${res.status}: ${(await res.text()).slice(0, 100)}`);
+      return null;
+    }
     const buffer = await res.arrayBuffer();
     return `data:audio/mpeg;base64,${Buffer.from(buffer).toString("base64")}`;
   } catch (e) {

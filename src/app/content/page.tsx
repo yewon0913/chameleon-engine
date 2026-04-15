@@ -113,7 +113,7 @@ export default function ChameleonContentPage() {
   const [reelsStyle, setReelsStyle] = useState("");
   const [reelsProduct, setReelsProduct] = useState("");
   const [reelsMessage, setReelsMessage] = useState("");
-  const [reelsDuration, setReelsDuration] = useState("5");
+  const [reelsDuration, setReelsDuration] = useState("15");
 
   // 상세페이지
   const [detailPlatform, setDetailPlatform] = useState("");
@@ -176,7 +176,7 @@ export default function ChameleonContentPage() {
         if (videoPrompt) setVideoPromptSaved(videoPrompt);
         if (videoPrompt) {
           setVideoUrl("loading");
-          trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt })
+          trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPrompt, duration: videoDuration })
             .then((v: any) => setVideoUrl(v.videoUrl || null))
             .catch(() => setVideoUrl(null));
         }
@@ -491,7 +491,7 @@ export default function ChameleonContentPage() {
                     {!videoUrl && videoPromptSaved && (
                       <button onClick={() => {
                         setVideoUrl("loading");
-                        trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPromptSaved })
+                        trpc.chameleon.generateReelsVideo.mutate({ prompt: videoPromptSaved, duration: reelsDuration })
                           .then((v: any) => setVideoUrl(v.videoUrl || null))
                           .catch(() => setVideoUrl(null));
                       }} className="text-[10px] px-2 py-1 rounded bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37]/30">재시도</button>

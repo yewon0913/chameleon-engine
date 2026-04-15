@@ -171,9 +171,12 @@ export const chameleonRouter = router({
 
   // 영상 생성 (별도 호출 — Kling V2.5, 최대 60초)
   generateReelsVideo: publicProcedure
-    .input(z.object({ prompt: z.string().min(1) }))
+    .input(z.object({ prompt: z.string().min(1), duration: z.string().optional() }))
     .mutation(async ({ input }) => {
-      const video = await generateVideo(input.prompt, { duration: "5", aspectRatio: "9:16" });
+      // Kling은 5 또는 10만 지원. 15/30은 10으로 매핑 (가장 긴 옵션)
+      const klingDuration = (input.duration === "5") ? "5" : "10";
+      console.log(`[video] Kling 호출: duration=${klingDuration} (요청: ${input.duration})`);
+      const video = await generateVideo(input.prompt, { duration: klingDuration, aspectRatio: "9:16" });
       return { videoUrl: video?.url || null };
     }),
 
