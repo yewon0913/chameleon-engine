@@ -2,17 +2,32 @@
 
 ## 프로젝트 개요
 소상공인 마케팅 AI 자동화 SaaS. 카멜레온 브랜드.
-- 배포: https://chameleon-engine.vercel.app
+- 배포: https://chameleon-engine-nu.vercel.app
 - GitHub: https://github.com/yewon0913/chameleon-engine
 - 원스톱과 같은 Supabase DB 공유 (chameleon_ 접두사)
+
+## 최근 업데이트 (2026-04-19)
+- 멀티모델 영상: Veo 3.1 Fast -> Kling 3 -> Kling 2.5 자동 폴백
+- ElevenLabs 나레이션: 스크립트 자동 추출 + multilingual_v2
+- 이미지: 음식->Ideogram V3, 기타->FLUX 2 Pro
+- 영상 프롬프트: AI Scene 1~4 추출, 9:16 세로, 5/10초 선택
+- Hermes QA: chameleon-qa.py (13.7KB)
+- Voicebox TTS 병행 사용 (~/voicebox/)
 
 ## 기술 스택
 - Next.js 16 + TypeScript + Tailwind CSS 4
 - tRPC + Drizzle ORM + Supabase PostgreSQL
 - AI: Anthropic Claude API (claude-sonnet-4-20250514)
 - 이미지: Nano Banana 2 (Gemini 3.1 Flash Image) + FLUX 2.0
-- 영상: Veo 3.1 (구글, 메인) + Kling 3.0 (fal.ai $0.029/초, 서브)
-- 레거시: fal.ai (FLUX + Kling 연동)
+- 영상: Veo 3.1 Fast (메인) -> Kling 3 -> Kling 2.5 Turbo Pro (폴백)
+- TTS: Voicebox 우선 (로컬, 무료) -> ElevenLabs 폴백 (클라우드, 유료)
+
+## Voicebox 연동 규칙
+- 나레이션 생성 시 항상 Voicebox 먼저 시도
+- Voicebox 서버 다운 시 자동으로 ElevenLabs 폴백
+- 파일: src/lib/voicebox.ts (Voicebox API) + src/lib/elevenlabs.ts (통합 래퍼)
+- API: POST http://localhost:17493/generate { text, language: "ko", voice_prompt: null }
+- 주의: Voicebox는 로컬 서버 — 맥북이 켜져 있어야 작동
 - 차트: Recharts
 - Vercel 배포 (ICN 서울)
 

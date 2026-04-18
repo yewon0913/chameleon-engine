@@ -29,6 +29,8 @@ export default function OsmuPage() {
   const [copied, setCopied] = useState("");
   const [recording, setRecording] = useState(false);
   const [toast, setToast] = useState("");
+  const [narrating, setNarrating] = useState<string | null>(null);
+  const [narrationUrls, setNarrationUrls] = useState<Record<string, string>>({});
 
   const transform = async () => {
     if (!content.trim()) return;
@@ -55,6 +57,30 @@ export default function OsmuPage() {
     navigator.clipboard.writeText(text);
     setCopied(key);
     setTimeout(() => setCopied(""), 2000);
+  };
+
+  const handleNarrate = async (text: string, key: string) => {
+    if (narrationUrls[key]) {
+      const audio = new Audio(narrationUrls[key]);
+      audio.play();
+      return;
+    }
+    setNarrating(key);
+    try {
+      const data = await trpc.osmu.narrate.mutate({ text: text.slice(0, 1000) });
+      if (data.narrationUrl) {
+        setNarrationUrls((prev) => ({ ...prev, [key]: data.narrationUrl! }));
+        const audio = new Audio(data.narrationUrl);
+        audio.play();
+        setToast("나레이션 생성 완료"); setTimeout(() => setToast(""), 2000);
+      } else {
+        setToast("나레이션 서버 미응답"); setTimeout(() => setToast(""), 3000);
+      }
+    } catch {
+      setToast("나레이션 생성 실패"); setTimeout(() => setToast(""), 3000);
+    } finally {
+      setNarrating(null);
+    }
   };
 
   const toggleRecording = async () => {
@@ -147,10 +173,24 @@ export default function OsmuPage() {
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${ch.color}`}>{ch.label}</span>
                       <span className="text-[10px] text-slate-500">{ch.desc}</span>
                     </div>
-                    <button onClick={() => handleCopy(text, ch.key)}
-                      className="rounded-lg bg-white/10 p-1.5 text-slate-400 hover:text-white transition-colors">
-                      {copied === ch.key ? <Check size={14} /> : <Copy size={14} />}
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => handleNarrate(text, ch.key)}
+                        disabled={narrating === ch.key}
+                        className="rounded-lg bg-white/10 p-1.5 text-slate-400 hover:text-white transition-colors"
+                        title={narrationUrls[ch.key] ? "재생" : "나레이션 생성"}>
+                        {narrating === ch.key ? <div className="chameleon-spinner !w-3.5 !h-3.5 !border-2" /> : narrationUrls[ch.key] ? <span className="text-xs">▶</span> : <Mic size={14} />}
+                      </button>
+                      {narrationUrls[ch.key] && (
+                        <a href={narrationUrls[ch.key]} download={`narration-${ch.key}.mp3`}
+                          className="rounded-lg bg-white/10 p-1.5 text-slate-400 hover:text-white transition-colors text-xs" title="다운로드">
+                          ↓
+                        </a>
+                      )}
+                      <button onClick={() => handleCopy(text, ch.key)}
+                        className="rounded-lg bg-white/10 p-1.5 text-slate-400 hover:text-white transition-colors">
+                        {copied === ch.key ? <Check size={14} /> : <Copy size={14} />}
+                      </button>
+                    </div>
                   </div>
                   <pre className="chameleon-bg-subtle rounded-xl p-4 text-sm text-white whitespace-pre-wrap leading-relaxed">{text}</pre>
                 </div>

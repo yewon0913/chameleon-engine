@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc/init";
 import { chatWithClaude } from "@/lib/claude-api";
+import { generateNarration } from "@/lib/elevenlabs";
 
 export const osmuRouter = router({
   transform: publicProcedure
@@ -42,5 +43,13 @@ ${input.content}
       } catch {
         return { result: content };
       }
+    }),
+
+  /** 나레이션 생성 — Voicebox 우선, ElevenLabs 폴백 */
+  narrate: publicProcedure
+    .input(z.object({ text: z.string().min(10) }))
+    .mutation(async ({ input }) => {
+      const narration = await generateNarration(input.text);
+      return { narrationUrl: narration };
     }),
 });
