@@ -347,3 +347,45 @@ export function buildProfilePrompt(opts: {
 
 한국어로 작성하세요.`;
 }
+
+// ═══════════════════════════════════════
+// 메타광고 리드 수집 파이프라인 프롬프트
+// ═══════════════════════════════════════
+export function buildMetaAdPrompt(params: {
+  businessType: string;
+  targetAudience?: string;
+  budget?: string;
+  goal?: string;
+}): string {
+  return `메타(Facebook/Instagram) 광고 리드 수집 캠페인을 설정해주세요.
+
+업종: ${params.businessType}
+타겟: ${params.targetAudience || "미정"}
+예산: ${params.budget || "일일 2만원"}
+목표: ${params.goal || "잠재고객 DB 수집"}
+
+## 필요한 산출물
+
+### 1. 광고 문구 5세트
+각 세트별로:
+- 후킹 문구 (1줄, 스크롤 멈추게)
+- 본문 (2~3줄, 가치 제안)
+- CTA 버튼 텍스트
+⚠️ 1위/최고/무조건/보장 같은 단정형 금지!
+
+### 2. 타겟팅 설정 추천
+- 위치/연령대/관심사·행동 타겟/제외 타겟
+
+### 3. 인스턴트 양식 설계
+- 이름(필수), 전화번호(필수), 이메일, 업종별 추가 질문
+
+### 4. 자동화 연결
+- Zapier: Facebook Lead Ads → Google Sheets + 솔라피 카카오톡 알림톡
+- 알림톡 템플릿 문구 제안
+
+### 5. 퍼널 시퀀스
+- Day1 감사 → Day3 사례공유 → Day7 상담제안 → Day14 혜택 → Day30 후기
+
+전환율 높은 패턴: 조건확인형 후킹 + 숫자 근거 + 짧은 CTA
+한국어로 작성하세요.`;
+}
