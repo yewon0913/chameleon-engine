@@ -24,12 +24,14 @@ import {
   Route,
 } from "lucide-react";
 
-// Phase 1: 핵심 메뉴만 표시
+// 메뉴 재구성 — 4그룹 12모듈
 const NAV_GROUPS = [
   {
     label: "📝 콘텐츠",
     items: [
       { href: "/content", label: "콘텐츠 공장", icon: Film },
+      { href: "/osmu", label: "OSMU", icon: Layers },
+      { href: "/templates", label: "템플릿", icon: MessageSquare },
       { href: "/hashtag", label: "해시태그", icon: Hash },
     ],
   },
@@ -38,30 +40,32 @@ const NAV_GROUPS = [
     items: [
       { href: "/analytics", label: "경쟁사분석", icon: BarChart2 },
       { href: "/report", label: "리포트", icon: FileText },
+      { href: "/ab-test", label: "A/B테스트", icon: FlaskConical },
     ],
   },
   {
-    label: "👥 고객",
+    label: "📣 마케팅",
+    items: [
+      { href: "/funnel", label: "퍼널", icon: GitBranch },
+      { href: "/calendar", label: "캘린더", icon: CalendarDays },
+      { href: "/deploy", label: "배포", icon: Send },
+      { href: "/autopilot", label: "오토파일럿", icon: Bot },
+    ],
+  },
+  {
+    label: "👥 관리",
     items: [
       { href: "/crm", label: "CRM", icon: Users },
-    ],
-  },
-  {
-    label: "🔜 준비중",
-    items: [
-      { href: "/osmu", label: "OSMU", icon: Layers },
-      { href: "/templates", label: "템플릿", icon: MessageSquare },
-      { href: "/calendar", label: "캘린더", icon: CalendarDays },
-      { href: "/outbound", label: "영업", icon: Target },
+      { href: "/intake", label: "인테이크", icon: Route },
       { href: "/revenue", label: "수익", icon: BarChart3 },
-      { href: "/simulator", label: "시뮬레이터", icon: Calculator },
+      { href: "/portfolio", label: "포트폴리오", icon: Briefcase },
     ],
   },
 ];
 
 const MAIN_NAV = [
   { href: "/content", label: "콘텐츠", icon: Film },
-  { href: "/analytics", label: "분석", icon: BarChart2 },
+  { href: "/osmu", label: "OSMU", icon: Layers },
   { href: "/crm", label: "CRM", icon: Users },
   { href: "/pricing", label: "요금제", icon: BarChart3 },
 ];
