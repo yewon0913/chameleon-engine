@@ -78,8 +78,46 @@ const INDUSTRY_STYLE: Record<string, string> = {
 const COPY_FORMULAS = `카피라이팅 공식:
 - AIDA: Attention(후킹)→Interest(궁금)→Desire(갖고싶다)→Action(지금)
 - PAS: Problem(문제)→Agitate(악화)→Solution(해결)
+- BAB: Before(전)→After(후)→Bridge(연결)
 - 4U: Urgent(긴급)+Unique(유일)+Useful(유용)+Ultra-specific(구체적)
 - 후킹 공식: 숫자+감정+의외성 ("99%가 모르는", "이것만 바꿨더니")`;
+
+// ═══ 오픈소스 통합: Ad Angles 5유형 (superamped) ═══
+const AD_ANGLES = `광고 앵글 5유형 (시장 인지도에 맞게 선택!):
+
+1. Problem(고통): 타겟의 고통을 생생하게 묘사 → "매달 이자에 허덕이시죠?"
+2. Solution(혜택): 결과/성과 먼저 보여주기 → "금리 50% 절감, 이렇게 됩니다"
+3. Comparison(비교): 현재 방법 vs 우리 → "은행 5% vs 정책자금 2.4%"
+4. Proof(증거): 숫자/후기/로고 → "3,000건 상담, 승인률 92%"
+5. Curiosity(호기심): 반전/인사이트 → "99%가 모르는 숨은 지원금"
+
+시장 인지도 단계:
+→ 인지도 높음 (제품 안다): Proof/Solution
+→ 인지도 중간 (해결책 안다): Solution/Comparison
+→ 인지도 낮음 (문제 안다): Problem/Curiosity
+→ 인지도 없음 (문제 모름): Curiosity (공감/동일시)`;
+
+// ═══ 오픈소스 통합: 소셜 포스트 9템플릿 (superamped) ═══
+const SOCIAL_TEMPLATES = `소셜 포스트 9템플릿:
+1. Story: 개인 경험→통찰 (공감 최고!)
+2. Observation: 패턴 발견→증거→결론
+3. Contrarian: 상식 깨기→근거→리프레이밍
+4. Listicle: N가지 팁/방법 (저장 유도!)
+5. Past vs Present: 과거↔현재 비교
+6. Hand-Raiser: "이런 분?" → 타겟 필터링
+7. Launch: 신제품/이벤트 발표
+8. Meme: 밈+유머→공유 유도
+9. Carousel: 슬라이드형 (저장률 최고!)`;
+
+// ═══ 오픈소스 통합: CRO 핵심 (53-point 압축) ═══
+export const CRO_CHECKLIST = `랜딩페이지 전환 체크리스트 (53점 압축):
+【고객 중심 (8점)】 고객이 주인공 / 고객 언어 사용 / 1타겟 집중 / 문제→제품 순서
+【스토리 (10점)】 Pain→Dream→Fix 순서 / 고통 구체적 / 꿈 생생하게 / 해결=제품
+【카피 (8점)】 구체적 숫자 / 버즈워드 금지 / 스캔 가능 / 적절한 길이
+【감정 (3점)】 감정 감사 적용 / 정체성 구매 / 스토리>스펙
+【디자인 (8점)】 단일 컬럼 / 왼쪽 정렬 / 70~80자 폭 / 스크롤 유도
+【CTA (8점)】 가치형 "무료 진단 받기" / 1개 주 CTA / 반복 배치 / 긴급성
+【증거 (8점)】 후기벽 / 구체적 결과 / 로고 바 / 보장/환불`;
 
 export function buildReelsPrompt(opts: {
   industry: string;
@@ -101,6 +139,10 @@ ${VIDEO_PROMPT_GUIDE}
 ${HOOKING_TYPES}
 
 ${COPY_FORMULAS}
+
+${AD_ANGLES}
+
+${SOCIAL_TEMPLATES}
 
 ## 업종별 광고 레퍼런스
 이 업종: ${indStyle}
