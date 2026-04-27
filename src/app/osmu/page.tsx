@@ -15,10 +15,11 @@ import { trpc } from "@/lib/trpc";
 
 const CHANNELS = [
   { key: "thread", label: "스레드", desc: "500자 요약", color: "bg-pink-500/20 text-pink-300" },
-  { key: "instagram", label: "인스타그램", desc: "캡션 150자 + 해시태그", color: "bg-fuchsia-500/20 text-fuchsia-300" },
-  { key: "cardNews", label: "카드뉴스", desc: "5~10장 텍스트", color: "bg-yellow-500/20 text-yellow-300" },
-  { key: "reels", label: "릴스 스크립트", desc: "30초 스크립트", color: "bg-purple-500/20 text-purple-300" },
-  { key: "shorts", label: "유튜브 쇼츠", desc: "쇼츠 스크립트", color: "bg-red-500/20 text-red-300" },
+  { key: "instagram", label: "인스타그램", desc: "캡션 150자 + 해시태그 30개", color: "bg-fuchsia-500/20 text-fuchsia-300" },
+  { key: "cardNews", label: "카드뉴스", desc: "10장 (1장=1포인트)", color: "bg-yellow-500/20 text-yellow-300" },
+  { key: "reels", label: "릴스 대본", desc: "20초 후킹→핵심→CTA", color: "bg-purple-500/20 text-purple-300" },
+  { key: "shorts", label: "유튜브 쇼츠", desc: "30초 + 자막 포함", color: "bg-red-500/20 text-red-300" },
+  { key: "metaAd", label: "메타 광고", desc: "A/B 카피 3개", color: "bg-blue-500/20 text-blue-300" },
 ] as const;
 
 export default function OsmuPage() {
