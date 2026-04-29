@@ -32,7 +32,84 @@ interface Template {
   businessType: string | null;
 }
 
+// 콘텐츠 템플릿 데이터
+import contentTemplates from "@/data/content-templates.json";
+type ContentTemplate = { industry: string; type: string; title: string; tags: string[]; preview: string; content: string };
+
+function ContentTemplateSection() {
+  const [filterIndustry, setFilterIndustry] = useState("");
+  const [filterType, setFilterType] = useState("");
+  const [selected, setSelected] = useState<ContentTemplate | null>(null);
+  const [copied2, setCopied2] = useState("");
+
+  const industries = [...new Set((contentTemplates as ContentTemplate[]).map(t => t.industry))];
+  const types = [...new Set((contentTemplates as ContentTemplate[]).map(t => t.type))];
+  const filtered = (contentTemplates as ContentTemplate[]).filter(t =>
+    (!filterIndustry || t.industry === filterIndustry) && (!filterType || t.type === filterType)
+  );
+
+  if (selected) {
+    return (
+      <div>
+        <button onClick={() => setSelected(null)} className="text-xs text-white/40 hover:text-white mb-3 flex items-center gap-1">
+          ← 목록
+        </button>
+        <div className="rounded-xl bg-[#1A1A1A] border border-white/10 p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold">{selected.industry}</span>
+            <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-bold">{selected.type}</span>
+          </div>
+          <h2 className="text-base font-bold text-white mb-4">{selected.title}</h2>
+          <pre className="whitespace-pre-wrap text-sm text-white/70 leading-relaxed bg-[#111] rounded-lg p-4 border border-white/5">{selected.content}</pre>
+          <div className="flex gap-2 mt-4">
+            <button onClick={() => { navigator.clipboard.writeText(selected.content); setCopied2(selected.title); setTimeout(() => setCopied2(""), 1500); }}
+              className="flex-1 py-2.5 rounded-lg bg-[#3B82F6] text-white text-sm font-bold">
+              {copied2 === selected.title ? "✅ 복사됨!" : "📋 전체 복사"}
+            </button>
+            <Link href="/content" className="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-bold text-center">
+              ✨ 이 템플릿으로 생성
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        <select value={filterIndustry} onChange={e => setFilterIndustry(e.target.value)}
+          className="bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+          <option value="">전체 업종</option>
+          {industries.map(i => <option key={i} value={i}>{i}</option>)}
+        </select>
+        <select value={filterType} onChange={e => setFilterType(e.target.value)}
+          className="bg-[#1A1A1A] border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+          <option value="">전체 유형</option>
+          {types.map(t => <option key={t} value={t}>{t}</option>)}
+        </select>
+        <span className="text-[11px] text-white/30 self-center">{filtered.length}개</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {filtered.map((t, i) => (
+          <div key={i} onClick={() => setSelected(t)}
+            className="rounded-xl bg-[#1A1A1A] border border-white/5 p-4 cursor-pointer hover:border-[#3B82F6]/30 transition">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-bold">{t.industry}</span>
+              <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[9px] font-bold">{t.type}</span>
+            </div>
+            <p className="text-sm font-medium text-white mb-1">{t.title}</p>
+            <p className="text-[11px] text-white/30 line-clamp-2">{t.preview}</p>
+            <div className="flex gap-1 mt-2">{t.tags.map(tag => <span key={tag} className="text-[9px] text-white/20">#{tag}</span>)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function TemplatesPage() {
+  const [tab, setTab] = useState<"content" | "cs">("content");
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [businessType, setBusinessType] = useState("카페");
@@ -104,6 +181,22 @@ export default function TemplatesPage() {
         </div>
       </div>
 
+      {/* 탭 전환 */}
+      <div className="flex gap-2 mb-6">
+        <button onClick={() => setTab("content")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tab === "content" ? "bg-[#3B82F6] text-white" : "bg-white/5 text-white/40 hover:text-white/70"}`}>
+          📝 콘텐츠 템플릿
+        </button>
+        <button onClick={() => setTab("cs")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tab === "cs" ? "bg-[#3B82F6] text-white" : "bg-white/5 text-white/40 hover:text-white/70"}`}>
+          💬 CS 응답 템플릿
+        </button>
+      </div>
+
+      {tab === "content" ? (
+        <ContentTemplateSection />
+      ) : (
+      <>
       {/* Generator */}
       <div className="rounded-2xl chameleon-border-slow bg-black/40 p-5 mb-6">
         <h3 className="text-sm font-bold text-white mb-3">AI 템플릿 자동 생성</h3>
@@ -182,6 +275,8 @@ export default function TemplatesPage() {
       <div className="mt-6 rounded-xl chameleon-border-slow bg-black/40 p-4 text-center">
         <p className="text-xs text-slate-500">크몽/숨고 1분 이내 응답 → 상위 노출 알고리즘 최적화에 유리합니다</p>
       </div>
+      </>
+      )}
     </div>
   );
 }
